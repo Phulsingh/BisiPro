@@ -1,0 +1,51 @@
+# =========================
+# .NET / Visual Studio
+# =========================
+
+.vs/
+**/.vs/
+
+bin/
+**/bin/
+
+obj/
+**/obj/
+
+.vscode/
+**/.vscode/
+
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Node / React
+# =========================
+
+node_modules/
+**/node_modules/
+
+dist/
+**/dist/
+
+# =========================
+# Environment files
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+@BisiPro.Api_HostAddress = http://localhost:5063
+
+GET {{BisiPro.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

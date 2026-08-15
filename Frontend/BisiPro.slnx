@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="bisipro.client/bisipro.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="BisiPro.Server/BisiPro.Server.csproj" />
+</Solution>

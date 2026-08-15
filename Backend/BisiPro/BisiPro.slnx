@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="BisiPro.Api/BisiPro.Api.csproj" />
+  <Project Path="BisiPro.Application/BisiPro.Application.csproj" />
+  <Project Path="BisiPro.Contracts/BisiPro.Contracts.csproj" />
+  <Project Path="BisiPro.Domain/BisiPro.Domain.csproj" />
+  <Project Path="BisiPro.Infrastructure/BisiPro.Infrastructure.csproj" />
+  <Project Path="BisiPro.Shared/BisiPro.Shared.csproj" />
+</Solution>
