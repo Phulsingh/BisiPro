@@ -15,6 +15,7 @@ namespace BisiPro.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+
     public class GroupController : ControllerBase
     {
         private readonly IMediator _mediator;
