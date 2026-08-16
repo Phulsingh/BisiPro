@@ -1,12 +1,26 @@
-﻿
+﻿import { BrowserRouter,Navigate,  Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import { AuthProvider } from "./context/authContext";
+
+
 function App() {
 
     return (
-        <div className="flex min-h-screen items-center justify-center">
-            <h1 className="text-4xl font-bold underline">
-                BisiPro Testing
-            </h1>
-        </div>
+    <BrowserRouter>
+      <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<div>Dashboard</div>} />
+        </Route>
+
+      </Routes>
+      </AuthProvider>
+    </BrowserRouter>
     );
 }
 
