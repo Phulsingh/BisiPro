@@ -10,6 +10,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:55344")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -56,6 +68,8 @@ app.UseHttpsRedirection();
 
 //Middleware for global exception handling
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
+app.UseCors("FrontendPolicy");
 
 app.UseAuthentication();
 

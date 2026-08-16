@@ -1,1 +1,75 @@
 ﻿
+/* BisiPro design system: shared colour and typography tokens */
+:root {
+  /* Type */
+  --font-body: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-display: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+
+  --text-display: clamp(2.25rem, 4vw, 3.75rem);
+  --text-page-title: clamp(2rem, 3vw, 2.7rem);
+  --text-section-title: 1.5rem;
+  --text-body: 0.95rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* Core palette */
+  --bisipro-ink: #183630;
+  --bisipro-forest: #183f37;
+  --bisipro-forest-deep: #164238;
+  --bisipro-teal: #078a76;
+  --bisipro-teal-dark: #056c5c;
+  --bisipro-mint: #b9e4d8;
+  --bisipro-leaf: #c3e4ba;
+
+  /* Surfaces and supporting text */
+  --bisipro-canvas: #f5f7f3;
+  --bisipro-surface: #ffffff;
+  --bisipro-surface-tint: #e2f1df;
+  --bisipro-border: #cedbd3;
+  --bisipro-border-soft: #d9e2dc;
+  --bisipro-text: #29463f;
+  --bisipro-text-muted: #60736c;
+  --bisipro-text-subtle: #788b83;
+  --bisipro-text-faint: #94a39d;
+
+  /* Existing component tokens, updated to the shared BisiPro palette */
+  --background: var(--bisipro-canvas);
+  --foreground: var(--bisipro-ink);
+  --card: var(--bisipro-surface);
+  --card-foreground: var(--bisipro-ink);
+  --popover: var(--bisipro-surface);
+  --popover-foreground: var(--bisipro-ink);
+  --primary: var(--bisipro-teal);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bisipro-surface-tint);
+  --secondary-foreground: var(--bisipro-forest);
+  --muted: #edf3ee;
+  --muted-foreground: var(--bisipro-text-muted);
+  --accent: var(--bisipro-mint);
+  --accent-foreground: var(--bisipro-forest);
+  --border: var(--bisipro-border);
+  --input: var(--bisipro-border);
+  --ring: var(--bisipro-teal);
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+/* Reusable semantic helpers for JSX and plain CSS */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+.text-display { font-size: var(--text-display); }
+.text-page-title { font-size: var(--text-page-title); }
+.text-section-title { font-size: var(--text-section-title); }
+.text-body { font-size: var(--text-body); }
+.text-small { font-size: var(--text-small); }
+.text-caption { font-size: var(--text-caption); }
+
+.text-brand-ink { color: var(--bisipro-ink); }
+.text-brand { color: var(--bisipro-teal); }
+.text-muted { color: var(--bisipro-text-muted); }
+.bg-brand-canvas { background-color: var(--bisipro-canvas); }
+.bg-brand-forest { background-color: var(--bisipro-forest); }
+.bg-brand { background-color: var(--bisipro-teal); }
+.border-brand { border-color: var(--bisipro-border); }
