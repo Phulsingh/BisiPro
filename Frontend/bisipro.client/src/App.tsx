@@ -8,6 +8,7 @@ import { MainLayout } from "./layouts/MainLayout";
 // Lazy-loaded pages
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const GroupsPage = lazy(() => import("./pages/GroupsPage"));
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/groups" element={<GroupsPage />} />
               </Route>
             </Route>
           </Routes>
