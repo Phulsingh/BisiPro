@@ -2,41 +2,90 @@
 @import "tw-animate-css";
 
 :root {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --background: #ffffff;
-  --foreground: #0f172a;
+  /* ── BisiPro core palette ── */
+  --bisipro-ink:          #183630;
+  --bisipro-forest:       #183f37;
+  --bisipro-forest-deep:  #164238;
+  --bisipro-teal:         #078a76;
+  --bisipro-teal-dark:    #056c5c;
+  --bisipro-mint:         #b9e4d8;
+  --bisipro-leaf:         #c3e4ba;
+  --bisipro-canvas:       #f5f7f3;
+  --bisipro-surface:      #ffffff;
+  --bisipro-surface-tint: #e2f1df;
+  --bisipro-border:       #cedbd3;
+  --bisipro-border-soft:  #d9e2dc;
+  --bisipro-text:         #29463f;
+  --bisipro-text-muted:   #60736c;
+  --bisipro-text-subtle:  #788b83;
+  --bisipro-text-faint:   #94a39d;
 
-  --card: #ffffff;
-  --card-foreground: #0f172a;
+  /* ── Semantic component tokens mapped to BisiPro palette ── */
+  --background:            var(--bisipro-canvas);
+  --foreground:            var(--bisipro-ink);
 
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --card:                  var(--bisipro-surface);
+  --card-foreground:       var(--bisipro-ink);
 
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
+  --popover:               var(--bisipro-surface);
+  --popover-foreground:    var(--bisipro-ink);
 
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --primary:               var(--bisipro-teal);
+  --primary-foreground:    #ffffff;
 
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --secondary:             var(--bisipro-surface-tint);
+  --secondary-foreground:  var(--bisipro-forest);
 
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --muted:                 #edf3ee;
+  --muted-foreground:      var(--bisipro-text-muted);
 
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
+  --accent:                var(--bisipro-mint);
+  --accent-foreground:     var(--bisipro-forest);
 
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #6366f1;
+  --destructive:           #dc2626;
+  --destructive-foreground:#ffffff;
 
-  --radius: 0.625rem;
+  --success:               #16a34a;
+  --success-foreground:    #ffffff;
+
+  --warning:               #d97706;
+  --warning-foreground:    #ffffff;
+
+  --border:                var(--bisipro-border);
+  --input:                 var(--bisipro-border);
+  --ring:                  var(--bisipro-teal);
+
+  --radius: 0.75rem;
+
+  /* ── Typography scale (kept from App.css) ── */
+  --font-body:    Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-display: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --text-display:       clamp(2.25rem, 4vw, 3.75rem);
+  --text-page-title:    clamp(2rem, 3vw, 2.7rem);
+  --text-section-title: 1.5rem;
+  --text-body:          0.95rem;
+  --text-small:         0.875rem;
+  --text-caption:       0.75rem;
+
+  /* ── Sidebar tokens ── */
+  --sidebar:                      var(--bisipro-surface);
+  --sidebar-foreground:           var(--bisipro-text);
+  --sidebar-primary:              var(--bisipro-teal);
+  --sidebar-primary-foreground:   #ffffff;
+  --sidebar-accent:               var(--bisipro-surface-tint);
+  --sidebar-accent-foreground:    var(--bisipro-forest);
+  --sidebar-border:               var(--bisipro-border);
+  --sidebar-ring:                 var(--bisipro-teal);
+
+  /* ── Shadow utilities ── */
+  --shadow-soft: 0 1px 2px 0 rgb(24 54 48 / 0.04), 0 1px 3px 0 rgb(24 54 48 / 0.06);
+  --shadow-card: 0 4px 12px -2px rgb(24 54 48 / 0.06), 0 2px 4px -2px rgb(24 54 48 / 0.04);
 }
 
 * {
@@ -60,36 +109,62 @@ body {
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
 
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-
-  --color-popover: var(--popover);
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-popover:            var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-
-  --color-primary: var(--primary);
+  --color-primary:            var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: var(--secondary);
+  --color-secondary:          var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-
-  --color-destructive: var(--destructive);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success:            var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning:            var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
+  --color-sidebar:            var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary:    var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:     var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border:     var(--sidebar-border);
+  --color-sidebar-ring:       var(--sidebar-ring);
 
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-card: var(--shadow-card);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
+
+/* ── Semantic utility helpers ── */
+.font-display        { font-family: var(--font-display); }
+.font-body           { font-family: var(--font-body); }
+.text-display        { font-size: var(--text-display); }
+.text-page-title     { font-size: var(--text-page-title); }
+.text-section-title  { font-size: var(--text-section-title); }
+.text-body           { font-size: var(--text-body); }
+.text-small          { font-size: var(--text-small); }
+.text-caption        { font-size: var(--text-caption); }
+.text-brand-ink      { color: var(--bisipro-ink); }
+.text-brand          { color: var(--bisipro-teal); }
+.bg-brand-canvas     { background-color: var(--bisipro-canvas); }
+.bg-brand-forest     { background-color: var(--bisipro-forest); }
+.bg-brand            { background-color: var(--bisipro-teal); }
+.border-brand        { border-color: var(--bisipro-border); }

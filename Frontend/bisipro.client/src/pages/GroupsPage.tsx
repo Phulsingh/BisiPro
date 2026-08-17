@@ -259,7 +259,7 @@ const GroupsPage = () => {
               value={bisiType ?? ""}
               onChange={(e) => {
                 const val = e.target.value
-                setBisiType(val as BisiType)
+                setBisiType(val ? (Number(val) as unknown as BisiType) : undefined)
                 setPageNumber(1)
               }}
             >
@@ -542,7 +542,7 @@ const GroupsPage = () => {
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          className="text-[#60736c] hover:text-[#078a76] hover:bg-[#eef5f0] rounded-lg"
+                          className="cursor-pointer text-[#60736c] hover:text-[#078a76] hover:bg-[#eef5f0] rounded-lg"
                           title="View Details"
                         >
                           <Eye className="size-4" />
