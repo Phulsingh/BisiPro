@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDebounce } from "@/hooks/useDebouce"
+import { CreateGroupDialog } from "@/components/CerateGroupDialog"
 
 // Display configurations for BisiTypes matching the BisiPro theme palette
 const bisiTypeConfig: Record<
@@ -74,6 +75,9 @@ const bisiTypeConfig: Record<
 }
 
 const GroupsPage = () => {
+  // Dialog state
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+
   // Query state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
@@ -212,6 +216,15 @@ const GroupsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Create Group Dialog */}
+      <CreateGroupDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          setPageNumber(1)
+          fetchGroups()
+        }}
+      />
       {/* Top Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -222,7 +235,10 @@ const GroupsPage = () => {
             Create and monitor rotating savings groups, monthly auctions, and member allocations.
           </p>
         </div>
-        <Button className="h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-brand/90 sm:self-center flex items-center gap-1.5 px-4">
+        <Button
+          onClick={() => setCreateDialogOpen(true)}
+          className="cursor-pointer h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-brand/90 sm:self-center flex items-center gap-1.5 px-4"
+        >
           <Plus className="size-4" />
           <span>New Group</span>
         </Button>
