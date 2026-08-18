@@ -9,7 +9,7 @@ type RuntimeConfiguration = Partial<{
   isProduction: boolean
 }>
 
-const defaultBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api/"
+const defaultBaseUrl = "https://localhost:7081/api/"
 const hasEnvironmentBaseUrl = Boolean(import.meta.env.VITE_API_BASE_URL)
 let configuration: AppConfig | undefined
 

@@ -237,7 +237,7 @@ const GroupsPage = () => {
         </div>
         <Button
           onClick={() => setCreateDialogOpen(true)}
-          className="cursor-pointer h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-brand/90 sm:self-center flex items-center gap-1.5 px-4"
+          className="cursor-pointer h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-[#056c5c] sm:self-center flex items-center gap-1.5 px-4"
         >
           <Plus className="size-4" />
           <span>New Group</span>
@@ -245,7 +245,7 @@ const GroupsPage = () => {
       </div>
 
       {/* Filter and Search Bar Card */}
-      <div className="rounded-xl border border-brand/40 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-brand bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           {/* Search Box */}
           <div className="relative flex-1">
@@ -338,7 +338,7 @@ const GroupsPage = () => {
       ) : loading ? (
         /* Loading Skeleton State */
         <div className="space-y-4">
-          <div className="hidden md:block rounded-xl border border-brand/30 bg-white overflow-hidden shadow-sm">
+          <div className="hidden md:block rounded-xl border border-brand bg-white overflow-hidden shadow-sm">
             <Table>
               <TableHeader className="bg-[#f5f7f3]/50">
                 <TableRow>
@@ -411,7 +411,7 @@ const GroupsPage = () => {
                 <span>Reset Filters</span>
               </Button>
             ) : (
-              <Button className="bg-brand text-white hover:bg-brand/90 rounded-xl px-4 flex items-center gap-1.5">
+              <Button className="bg-brand text-white hover:bg-[#056c5c] rounded-xl px-4 flex items-center gap-1.5">
                 <Plus className="size-4" />
                 <span>Create Group</span>
               </Button>
@@ -422,7 +422,7 @@ const GroupsPage = () => {
         /* Data Display States */
         <div className="space-y-4">
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-xl border border-brand/40 bg-white overflow-hidden shadow-sm">
+          <div className="hidden md:block rounded-xl border border-brand bg-white overflow-hidden shadow-sm">
             <Table>
               <TableHeader className="bg-[#f5f7f3]/50">
                 <TableRow>
@@ -674,7 +674,7 @@ const GroupsPage = () => {
           </div>
 
           {/* Pagination Controls Footer Container */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-brand/40 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-brand bg-white p-4 shadow-sm">
             {/* Left Side: Summary and Page Size Select */}
             <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-[#60736c] justify-between sm:justify-start">
               <span>
