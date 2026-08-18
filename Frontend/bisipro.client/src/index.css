@@ -153,6 +153,22 @@ body {
   --radius-2xl: calc(var(--radius) + 8px);
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Tailwind v4 leaves the default border-color at `currentColor`, which makes
+   every bare `border` / `border-b` (table rows, cards, dividers) render in the
+   dark ink text colour and read as black. Fall back to the BisiPro border
+   token instead, the way Tailwind v3 fell back to gray-200.
+   ────────────────────────────────────────────────────────────────────────── */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--bisipro-border, currentColor);
+  }
+}
+
 /* ── Semantic utility helpers ── */
 .font-display        { font-family: var(--font-display); }
 .font-body           { font-family: var(--font-body); }

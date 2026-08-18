@@ -19,7 +19,6 @@ import { NavLink, useLocation } from "react-router-dom"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -120,11 +119,6 @@ export function NavConfig() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="m-3 rounded-xl bg-[#f1f6f2] p-3 group-data-[collapsible=icon]:hidden">
-        <p className="text-xs font-semibold text-[#29463f]">Need a hand?</p>
-        <p className="mt-1 text-xs leading-5 text-[#70857d]">Our support team is ready to help your group.</p>
-        <a href="mailto:support@bisipro.com" className="mt-2 inline-flex text-xs font-bold text-[#078a76] hover:underline">Contact support</a>
-      </SidebarFooter>
     </Sidebar>
   )
 }
