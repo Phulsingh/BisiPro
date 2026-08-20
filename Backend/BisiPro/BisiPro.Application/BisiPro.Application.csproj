@@ -23,7 +23,6 @@
     <Folder Include="Common\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Features\Authentications\Queries\" />
-    <Folder Include="Features\GroupMembers\Queries\" />
     <Folder Include="Features\Roles\" />
     <Folder Include="Features\Users\" />
     <Folder Include="Validators\" />
