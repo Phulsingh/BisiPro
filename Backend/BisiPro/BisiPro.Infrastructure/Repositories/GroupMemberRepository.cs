@@ -34,11 +34,11 @@ namespace BisiPro.Infrastructure.Repositories
                 .Where(x => x.Group.AgentId == agentId);
 
             // Name filter
-            if (!string.IsNullOrWhiteSpace(filter.Name))
+            if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 query = query.Where(x =>
-                    x.User.FirstName.Contains(filter.Name) ||
-                    x.User.LastName.Contains(filter.Name));
+                    x.User.FirstName.Contains(filter.Search) ||
+                    x.User.LastName.Contains(filter.Search));
             }
 
             // Group filter
@@ -73,6 +73,37 @@ namespace BisiPro.Infrastructure.Repositories
                 TotalCount = totalCount
             };
         }
+
+        public async Task<GroupMember?> GetByGroupAndUserAsync(
+     Guid groupId,
+     Guid userId,
+     CancellationToken cancellationToken)
+        {
+            return await _context.GroupMembers
+                .FirstOrDefaultAsync(
+                    x => x.GroupId == groupId &&
+                         x.UserId == userId,
+                    cancellationToken);
+        }
+
+        public async Task<int> GetActiveMemberCountAsync(
+            Guid id, CancellationToken cancellationToken)
+        {
+            return await _context.GroupMembers
+                    .CountAsync(x => x.GroupId == id && x.IsActive, cancellationToken);
+        }
+
+        public async Task<List<GroupMember>> GetByGroupIdAsync(
+         Guid groupId,
+         CancellationToken cancellationToken)
+        {
+            return await _context.GroupMembers
+                   .AsNoTracking()
+                   .Include(x => x.User)
+                   .Where(x => x.GroupId == groupId && x.IsActive)
+                   .ToListAsync(cancellationToken);
+        }
+
 
 
         public async Task SaveChangesAsync(

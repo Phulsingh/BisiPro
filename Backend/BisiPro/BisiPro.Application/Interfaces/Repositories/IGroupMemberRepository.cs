@@ -19,6 +19,7 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task<int> GetActiveMemberCountAsync(
           Guid groupId,
           CancellationToken cancellationToken);
+
         Task AddAsync(
            GroupMember groupMember,
            CancellationToken cancellationToken);
