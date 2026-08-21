@@ -42,7 +42,7 @@ export const navigationGroups: { label: string; items: NavigationItem[] }[] = [
     items: [
       { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { title: "Groups", href: "/groups", icon: UsersRound },
-      { title: "Members", href: "/members", icon: ContactRound },
+      { title: "Members", href: "group/members", icon: ContactRound },
     ],
   },
   {

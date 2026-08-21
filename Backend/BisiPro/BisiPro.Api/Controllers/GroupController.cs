@@ -2,6 +2,7 @@
 using BisiPro.Application.Features.Groups.Commands.CreateGroup;
 using BisiPro.Application.Features.Groups.Commands.DeleteGroup;
 using BisiPro.Application.Features.Groups.Commands.UpdateGroup;
+using BisiPro.Application.Features.Groups.GetGroupDropdown;
 using BisiPro.Application.Features.Groups.Queries;
 using BisiPro.Contracts.DTO_s.Groups;
 //using System.IdentityModel.Tokens.Jwt;
@@ -19,10 +20,12 @@ namespace BisiPro.Api.Controllers
     public class GroupController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<GroupController> _logger;
 
-        public GroupController(IMediator mediator)
+        public GroupController(IMediator mediator, ILogger<GroupController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -117,5 +120,40 @@ namespace BisiPro.Api.Controllers
             }
             return Ok(result);
         }
+
+
+        [HttpGet("dropdown")]
+        public async Task<IActionResult> GetGroupDropdown(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+             "Get Group dropdown request received.");
+
+            var agentIdValue =  User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(agentIdValue))
+            {
+                _logger.LogWarning(
+                    "AgentId was not found in JWT.");
+
+                return Unauthorized();
+            }
+
+            if (!Guid.TryParse(agentIdValue, out var agentId))
+            {
+                _logger.LogWarning(
+                    "Invalid AgentId found in JWT: {AgentIdValue}",
+                    agentIdValue);
+
+                return Unauthorized();
+            }
+            var query = new GetGroupDropdownQuery(agentId);
+            var result = await _mediator.Send(query ,cancellationToken);
+            _logger.LogInformation(
+            "Group dropdown retrieved successfully for AgentId: {AgentId}",
+             agentId);
+
+            return Ok(result);
+        }
+
     }
 }

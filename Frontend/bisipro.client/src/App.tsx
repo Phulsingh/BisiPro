@@ -9,7 +9,7 @@ import { MainLayout } from "./layouts/MainLayout";
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const GroupsPage = lazy(() => import("./pages/GroupsPage"));
-
+const GroupMemberPage = lazy(() => import("./pages/GroupMemberPage"));
 
 function App() {
 
@@ -26,6 +26,7 @@ function App() {
               <Route element={<MainLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/groups" element={<GroupsPage />} />
+                <Route path="/group/members" element={<GroupMemberPage />} />
               </Route>
             </Route>
           </Routes>

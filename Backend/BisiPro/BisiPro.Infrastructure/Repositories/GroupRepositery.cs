@@ -4,6 +4,7 @@ using BisiPro.Contracts.Common;
 using BisiPro.Domain.Entities;
 using BisiPro.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using BisiPro.Contracts.DTO_s.Groups;
 
 namespace BisiPro.Infrastructure.Repositories
 {
@@ -20,6 +21,20 @@ namespace BisiPro.Infrastructure.Repositories
             )
         {
             return await _context.Groups.AnyAsync(x => x.GroupName == GroupName, cancellationToken);
+        }
+
+        public async Task<List<GroupDropdownResponse>> GetDropdownByAgentIdAsync(Guid agentId, CancellationToken cancellationToken
+            )
+        {
+            return await _context.Groups
+                .Where(x => x.AgentId == agentId && x.IsActive)
+                .Select(x => new GroupDropdownResponse
+                {
+                    Id = x.Id,
+                    GroupName = x.GroupName
+                })
+                .OrderBy(x => x.GroupName)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task AddAsync(Group group, CancellationToken cancellationToken)
