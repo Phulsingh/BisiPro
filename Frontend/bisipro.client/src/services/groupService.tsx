@@ -19,6 +19,12 @@ export type Group = {
   isActive: boolean
 }
 
+/** Lightweight group option returned by GET /api/Group/dropdown */
+export type GroupDropdownItem = {
+  id: string
+  groupName: string
+}
+
 export type GroupQueryParams = {
   search?: string
   pageNumber?: number
@@ -48,6 +54,7 @@ export type CreateGroupRequest = {
 
 export type GroupListResponse = PagedResponse<Group>
 export type GroupResponse = ApiResponse<Group>
+export type GroupDropdownResponse = ApiResponse<GroupDropdownItem[]>
 
 export const groupService = {
   getGroups(params: GroupQueryParams = {}) {
@@ -60,8 +67,11 @@ export const groupService = {
     return apiService.get<GroupResponse>(`Group/${groupId}`)
   },
 
+  getGroupDropdown() {
+    return apiService.get<GroupDropdownResponse>("Group/dropdown")
+  },
+
   createGroup(body: CreateGroupRequest) {
     return apiService.post<GroupResponse, CreateGroupRequest>("Group", body)
   },
 }
-

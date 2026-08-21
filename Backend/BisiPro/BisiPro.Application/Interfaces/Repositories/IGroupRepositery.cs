@@ -1,6 +1,7 @@
 ﻿
 using BisiPro.Application.Features.Groups;
 using BisiPro.Contracts.Common;
+using BisiPro.Contracts.DTO_s.Groups;
 using BisiPro.Domain.Entities;
 
 namespace BisiPro.Application.Interfaces.Repositories
@@ -31,6 +32,10 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task DeleteAsync(
             Group group,
             CancellationToken cancellationToken);
+
+        Task<List<GroupDropdownResponse>> GetDropdownByAgentIdAsync(
+        Guid agentId,
+        CancellationToken cancellationToken);
 
         Task SaveChangesAsync(
             CancellationToken cancellationToken);
