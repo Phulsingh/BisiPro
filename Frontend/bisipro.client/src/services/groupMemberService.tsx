@@ -26,8 +26,17 @@ export type GroupMemberResponse = ApiResponse<GroupMember>
 
 export const groupMemberService = {
   getGroupMembers(params: GroupMemberQueryParams = {}) {
-    return apiService.get<GroupMemberListResponse>("GroupMember", {
-      params,
-    })
+    return apiService.get<GroupMemberListResponse>(
+      "GroupMember",
+      {
+        params,
+      }
+    );
   },
-}
+
+  getGroupMemberById(id: string) {
+    return apiService.get<GroupMemberResponse>(
+      `GroupMember/${id}`
+    );
+  },
+};
