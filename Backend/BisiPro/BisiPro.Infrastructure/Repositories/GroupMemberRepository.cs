@@ -93,6 +93,16 @@ namespace BisiPro.Infrastructure.Repositories
                     .CountAsync(x => x.GroupId == id && x.IsActive, cancellationToken);
         }
 
+        public async Task<GroupMember?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await _context.GroupMembers
+                .AsNoTracking()
+                .Include(x => x.User)
+                .Include(x => x.Group)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
+
+
         public async Task<List<GroupMember>> GetByGroupIdAsync(
          Guid groupId,
          CancellationToken cancellationToken)

@@ -11,6 +11,11 @@ namespace BisiPro.Application.Interfaces.Repositories
         Guid agentId,
         GroupMemberFilter filter,
         CancellationToken cancellationToken);
+
+        Task<GroupMember?> GetByIdAsync(
+            Guid id,
+            CancellationToken cancellationToken);
+
         Task<GroupMember?> GetByGroupAndUserAsync(
           Guid groupId,
           Guid userId,

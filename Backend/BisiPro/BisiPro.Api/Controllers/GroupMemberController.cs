@@ -1,5 +1,6 @@
 ﻿using BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands;
 using BisiPro.Application.Features.GroupMembers.Queries;
+using BisiPro.Application.Features.GroupMembers.Queries.GetGroupMemberById;
 using BisiPro.Application.Filters;
 using BisiPro.Contracts.DTO_s.GroupMembers;
 using MediatR;
@@ -124,6 +125,35 @@ namespace BisiPro.Api.Controllers
             _logger.LogInformation(
                 "GetAll GroupMembers request completed successfully for AgentId: {AgentId}",
                 agentId);
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+             "Get GroupMember request received for GroupMemberId: {GroupMemberId}",
+             id);
+
+            var result = await _mediator.Send(
+                new GetGroupMemberByIdQuery(id),
+                  cancellationToken
+                );
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning(
+                    "GroupMember not found for GroupMemberId: {GroupMemberId}",
+                    id);
+
+                return NotFound(result);
+            }
+
+            _logger.LogInformation(
+             "GroupMember retrieved successfully for GroupMemberId: {GroupMemberId}",
+             id);
 
             return Ok(result);
         }
