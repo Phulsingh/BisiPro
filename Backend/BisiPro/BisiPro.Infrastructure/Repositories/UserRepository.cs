@@ -40,8 +40,12 @@ namespace BisiPro.Infrastructure.Repositories
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _context.Users
-                .Include(x => x.Role)
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);   
+                .AsNoTracking()
+                .Include(x => x.GroupMemberships)
+                 .ThenInclude(x => x.Group)
+                 .FirstOrDefaultAsync(
+                    x => x.Id == id,
+                    cancellationToken);
         }
 
         public Task UpdateAsync(User user, CancellationToken cancellationToken)
