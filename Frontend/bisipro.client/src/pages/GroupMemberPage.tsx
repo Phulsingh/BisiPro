@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Search,
   RotateCcw,
@@ -41,6 +42,8 @@ import { getInitials} from "@/lib/utils"
 
 
 const GroupMemberPage = () => {
+  const navigate = useNavigate()
+
   // Query state
   const [search, setSearch] = useState("")
   const debouncedSearch = useDebounce(search, 300)
@@ -231,6 +234,12 @@ const GroupMemberPage = () => {
     if (page >= 1 && page <= totalPages) {
       setPageNumber(page)
     }
+  }
+
+  // Open the member profile, carrying the membership row so the detail page can show
+  // group-scoped figures the User endpoint does not return
+  const handleViewDetails = (member: GroupMember) => {
+    navigate(`/group/members/${member.userId}`, { state: { member } })
   }
 
   return (
@@ -553,6 +562,7 @@ const GroupMemberPage = () => {
                       <Button
                         variant="ghost"
                         size="icon-sm"
+                        onClick={() => handleViewDetails(member)}
                         className="cursor-pointer text-[#60736c] hover:text-[#078a76] hover:bg-[#eef5f0] rounded-lg"
                         title="View Details"
                       >
@@ -649,7 +659,8 @@ const GroupMemberPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-[#cedbd3] text-[#29463f] hover:bg-[#f5f7f3] rounded-lg w-full flex justify-center items-center gap-1.5"
+                    onClick={() => handleViewDetails(member)}
+                    className="cursor-pointer border-[#cedbd3] text-[#29463f] hover:bg-[#f5f7f3] rounded-lg w-full flex justify-center items-center gap-1.5"
                   >
                     <Eye className="size-3.5" />
                     <span>View Details</span>

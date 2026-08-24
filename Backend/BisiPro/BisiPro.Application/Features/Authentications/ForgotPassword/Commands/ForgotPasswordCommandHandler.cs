@@ -67,7 +67,7 @@ public class ForgotPasswordCommandHandler
             cancellationToken);
 
         var resetLink =
-          $"https://localhost:5173/reset-password?token={Uri.EscapeDataString(token)}";
+          $"https://localhost:55344/reset-password?token={Uri.EscapeDataString(token)}";
 
         // Send token/link through email
         await _emailService.SendPasswordResetEmailAsync(

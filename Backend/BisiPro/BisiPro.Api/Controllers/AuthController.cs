@@ -81,6 +81,24 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordRequest request,
+         CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+                "Password reset request received.");
+
+            var command = new ResetPasswordCommand(request);
+
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
+
+            return Ok(result);
+        }
+
 
         [HttpPost("claim-check")]
         public async Task<IActionResult> CheckClaim([FromBody] CreateGroupRequest request)
