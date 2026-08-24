@@ -33,4 +33,16 @@ export const authService = {
   register(user: RegisterRequest) {
     return apiService.post<RegisterResponse, RegisterRequest>("auth/register", user)
   },
+
+  forgotPassword(email: string) {
+    return apiService.post<ApiResponse<unknown>, { email: string }>("auth/forgot-password", { email })
+  },
+
+  resetPassword(token: string, newPassword: string) {
+    return apiService.post<ApiResponse<unknown>, { token: string; newPassword: string }>("auth/reset-password", {
+      token,
+      newPassword
+    })
+  }
+
 }

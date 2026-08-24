@@ -66,7 +66,7 @@ export function LoginForm({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4">
             <label htmlFor="password" className="text-sm font-semibold text-[#29463f]">Password</label>
-            <a href="#" className="text-sm font-semibold text-[#078a76] underline-offset-4 transition-colors hover:text-[#056c5c] hover:underline">Forgot password?</a>
+            <Link to="/forgot-password" className="text-sm font-semibold text-[#078a76] underline-offset-4 transition-colors hover:text-[#056c5c] hover:underline">Forgot password?</Link>
           </div>
           <Input id="password" name="password" type="password" autoComplete="current-password" required className="h-12 rounded-xl border-[#cedbd3] bg-white px-4 text-[#183630] shadow-[0_1px_2px_rgba(24,54,48,0.04)] focus-visible:border-[#078a76] focus-visible:ring-[#078a76]/20" />
         </div>
