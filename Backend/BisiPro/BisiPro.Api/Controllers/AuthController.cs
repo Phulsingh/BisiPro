@@ -1,21 +1,27 @@
 ﻿using BisiPro.Application.Features.Authentications.Commands.Login;
 using BisiPro.Application.Features.Authentications.Commands.Register;
+using BisiPro.Application.Features.Authentications.ForgotPassword;
+using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
 using BisiPro.Contracts.Authentication;
 using BisiPro.Contracts.DTO_s.Groups;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace BisiPro.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IMediator mediator)
+        public AuthController(IMediator mediator, ILogger<AuthController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         // -------------------------------
@@ -49,6 +55,28 @@ namespace BisiPro.Api.Controllers
             {
                 return Unauthorized(result);
             }
+
+            return Ok(result);
+        }
+
+        // -------------------------------
+        // Reset Password
+        // -------------------------------
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordRequest request,
+        CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+                "Forgot password request received for Email: {Email}",
+                request.Email);
+
+            var command = new ForgotPasswordCommand(request);
+
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
 
             return Ok(result);
         }

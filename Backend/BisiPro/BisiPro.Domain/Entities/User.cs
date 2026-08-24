@@ -26,5 +26,8 @@ namespace BisiPro.Domain.Entities
         // Group memberships
         public ICollection<GroupMember> GroupMemberships { get; set; }
             = new List<GroupMember>();
+
+        public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
+           = new List<PasswordResetToken>();
     }
 }

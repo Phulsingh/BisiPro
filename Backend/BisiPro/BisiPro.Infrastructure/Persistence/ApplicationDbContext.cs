@@ -44,9 +44,13 @@ namespace BisiPro.Infrastructure.Persistence
                 })
                 .IsUnique();
 
+                modelBuilder.Entity<PasswordResetToken>()
+               .HasOne(x => x.User)
+               .WithMany(x => x.PasswordResetTokens)
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
             });
-
-
         }
 
 
@@ -54,6 +58,6 @@ namespace BisiPro.Infrastructure.Persistence
         public DbSet<Role> Roles { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
-
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     }
 }
