@@ -3,9 +3,11 @@ using BisiPro.Application.Interfaces.Repositories;
 using BisiPro.Infrastructure.Authentication;
 using BisiPro.Infrastructure.Persistence;
 using BisiPro.Infrastructure.Repositories;
+using BisiPro.Infrastructure.Email;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace BisiPro.Infrastructure.DependencyInjection
 {
@@ -37,6 +39,13 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             //GroupMember Services
             services.AddScoped<IGroupMemberRepository,GroupMemberRepository>();
+
+            //PasswordResetToken Services
+            services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+           
 
             return services;
         }
