@@ -2,6 +2,7 @@
 using BisiPro.Application.Features.Authentications.Commands.Register;
 using BisiPro.Application.Features.Authentications.ForgotPassword;
 using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
+using BisiPro.Application.Features.Authentications.ResetPassword;
 using BisiPro.Contracts.Authentication;
 using BisiPro.Contracts.DTO_s.Groups;
 using MediatR;

@@ -45,7 +45,10 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
-           
+
+            //AdminDashboard Services
+            services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+
 
             return services;
         }
