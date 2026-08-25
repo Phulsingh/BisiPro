@@ -3,6 +3,7 @@ using BisiPro.Application.Interfaces.Repositories;
 using BisiPro.Contracts.Authentication;
 using BisiPro.Contracts.Common;
 using BisiPro.Domain.Entities;
+using BisiPro.Domain.Enums;
 using MediatR;
 using System.Data;
 
@@ -13,11 +14,13 @@ namespace BisiPro.Application.Features.Authentications.Commands.Register
         private readonly IPasswordService _passwordService;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IActivityLogRepository _activityLogRepository;
 
-        public RegisterCommandHandler(IPasswordService passwordService, IRoleRepository roleRepository, IUserRepository userRepository)
+        public RegisterCommandHandler(IPasswordService passwordService, IRoleRepository roleRepository, IUserRepository userRepository, IActivityLogRepository activityLogRepository)
         {
             _passwordService = passwordService;
             _roleRepository = roleRepository;
+            _activityLogRepository = activityLogRepository;
             _userRepository = userRepository;
 
         }
@@ -71,6 +74,7 @@ namespace BisiPro.Application.Features.Authentications.Commands.Register
                 PhoneNumber = command.Request.PhoneNumber,
                 RoleId = role.Id,
                 IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
 
 
@@ -88,6 +92,23 @@ namespace BisiPro.Application.Features.Authentications.Commands.Register
             await _userRepository.SaveChangesAsync(
                 cancellationToken);
 
+
+            // 10. Create Activity Log
+            var activityLog = new ActivityLog
+            {
+                ActivityType = ActivityType.UserRegistered,
+                Message =
+                    $"{user.FirstName} {user.LastName} registered.",
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _activityLogRepository.AddAsync(
+               activityLog,
+               cancellationToken);
+
+            await _activityLogRepository.SaveChangesAsync(
+                cancellationToken);
 
             // Step 6 : Return Response
             return new ApiResponse<RegisterResponse>

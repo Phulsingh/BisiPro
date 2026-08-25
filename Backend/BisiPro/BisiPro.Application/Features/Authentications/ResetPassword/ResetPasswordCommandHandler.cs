@@ -2,6 +2,8 @@
 using BisiPro.Application.Interfaces;
 using BisiPro.Application.Interfaces.Repositories;
 using BisiPro.Contracts.Common;
+using BisiPro.Domain.Entities;
+using BisiPro.Domain.Enums;
 using MediatR;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,14 +19,19 @@ namespace BisiPro.Application.Features.Authentications.Commands.ResetPassword
         private readonly IUserRepository _userRepository;
         private readonly IPasswordService _passwordService;
 
+        private readonly IActivityLogRepository _activityLogRepository;
+
         public ResetPasswordCommandHandler(
             IPasswordResetTokenRepository tokenRepository,
             IUserRepository userRepository,
-            IPasswordService passwordService)
+            IPasswordService passwordService,
+            IActivityLogRepository activityLogRepository
+            )
         {
             _tokenRepository = tokenRepository;
             _userRepository = userRepository;
             _passwordService = passwordService;
+            _activityLogRepository = activityLogRepository;
         }
 
         public async Task<ApiResponse<string>> Handle(
@@ -105,7 +112,24 @@ namespace BisiPro.Application.Features.Authentications.Commands.ResetPassword
             // 8. Mark token as used
             resetToken.UsedAt = DateTime.UtcNow;
 
-            // 9. Save
+            // 9. Create Activity Log
+            var activityLog = new ActivityLog
+            {
+                ActivityType = ActivityType.ResetPassword,
+                Message =
+                    $"{user.FirstName} {user.LastName} password reset successfully.",
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            await _activityLogRepository.AddAsync(
+               activityLog,
+               cancellationToken);
+
+            await _activityLogRepository.SaveChangesAsync(
+                cancellationToken);
+
+            // 10. Save
             await _userRepository.SaveChangesAsync(
                 cancellationToken);
 

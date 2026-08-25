@@ -23,5 +23,9 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task<List<RecentMemberResponse>> GetRecentMembersAsync(
             int count,
             CancellationToken cancellationToken);
+
+        Task<List<RecentActivityResponse>> GetRecentActivitiesAsync(
+            int count,
+            CancellationToken cancellationToken);
     }
 }
