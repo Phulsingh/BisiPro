@@ -14,8 +14,8 @@ export type recentGroups ={
 }
 
 export type recentMembers={
-    id: string,
-    firstName: string,
+    id: string,          // the member's userId
+    fullName: string,
     groupId: string,
     groupName: string,
     joinedDate: string,
