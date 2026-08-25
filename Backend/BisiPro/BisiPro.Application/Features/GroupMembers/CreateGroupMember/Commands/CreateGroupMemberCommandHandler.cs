@@ -16,15 +16,19 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
         private readonly IGroupRepository _groupRepository;
         private readonly IUserRepository _userRepository;
         private readonly IGroupMemberRepository _groupMemberRepository;
+        private readonly IActivityLogRepository _activityLogRepository;
 
         public CreateGroupMemberCommandHandler(
             IGroupRepository groupRepository,
             IUserRepository userRepository,
-            IGroupMemberRepository groupMemberRepository)
+            IGroupMemberRepository groupMemberRepository,
+            IActivityLogRepository activityLogRepository
+            )
         {
             _groupRepository = groupRepository;
             _userRepository = userRepository;
             _groupMemberRepository = groupMemberRepository;
+            _activityLogRepository = activityLogRepository;
         }
 
         public async Task<ApiResponse<GroupMemberResponse>> Handle(
@@ -117,7 +121,22 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
                 groupMember,
                 cancellationToken);
 
-            await _groupMemberRepository.SaveChangesAsync(
+            // 10. Create Activity Log
+            var activityLog = new ActivityLog
+            {
+                ActivityType = ActivityType.MemberJoined,
+                Message =
+                    $"{user.FirstName} {user.LastName} joined group '{group.GroupName}'.",
+                UserId = user.Id,
+                GroupId = group.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _activityLogRepository.AddAsync(
+                activityLog,
+                cancellationToken);
+
+            await _activityLogRepository.SaveChangesAsync(
                 cancellationToken);
 
             // 10. Return Response

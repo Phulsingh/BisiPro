@@ -83,5 +83,25 @@ namespace BisiPro.Infrastructure.Repositories
                          }).ToListAsync(cancellationToken);
 
         }
+
+        public async Task<List<RecentActivityResponse>> GetRecentActivitiesAsync(
+          int count,
+          CancellationToken cancellationToken)
+          {
+            return await _context.ActivityLogs
+                .AsNoTracking()
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(count)
+                .Select(x => new RecentActivityResponse
+                {
+                    Id = x.Id,
+                    ActivityType = x.ActivityType,
+                    Message = x.Message,
+                    UserId = x.UserId,
+                    GroupId = x.GroupId,
+                    CreatedAt = x.CreatedAt
+                })
+                .ToListAsync(cancellationToken);
+        }
     }
 }

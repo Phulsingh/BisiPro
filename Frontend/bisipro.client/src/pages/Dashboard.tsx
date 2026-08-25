@@ -22,6 +22,7 @@ import { cn, formatDate, getInitials } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/context/authContext"
+import { greetingForNow } from "@/lib/utils"
 
 /** One of the four headline metrics, with an active-share progress bar */
 const StatCard = ({
@@ -110,12 +111,6 @@ const EmptyList = ({ icon: Icon, message }: { icon: React.ElementType; message: 
   </div>
 )
 
-const greetingForNow = () => {
-  const hour = new Date().getHours()
-  if (hour < 12) return "Good morning"
-  if (hour < 17) return "Good afternoon"
-  return "Good evening"
-}
 
 /** Share of total expressed as a percentage, guarding against a zero total */
 const percentOf = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0)

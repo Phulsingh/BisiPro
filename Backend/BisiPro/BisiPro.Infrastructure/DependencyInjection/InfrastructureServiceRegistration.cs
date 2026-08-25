@@ -49,6 +49,8 @@ namespace BisiPro.Infrastructure.DependencyInjection
             //AdminDashboard Services
             services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 
+            services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+
 
             return services;
         }

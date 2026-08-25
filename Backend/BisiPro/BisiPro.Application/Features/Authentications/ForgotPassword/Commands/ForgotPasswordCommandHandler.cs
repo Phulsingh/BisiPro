@@ -2,6 +2,7 @@
 using BisiPro.Application.Interfaces.Repositories;
 using BisiPro.Contracts.Common;
 using BisiPro.Domain.Entities;
+using BisiPro.Domain.Enums;
 using MediatR;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,14 +16,19 @@ public class ForgotPasswordCommandHandler
     private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly IEmailService _emailService;
 
+    private readonly IActivityLogRepository _activityLogRepository;
+
     public ForgotPasswordCommandHandler(
         IUserRepository userRepository,
         IPasswordResetTokenRepository tokenRepository,
-        IEmailService emailService)
+        IEmailService emailService,
+        IActivityLogRepository activityLogRepository
+        )
     {
         _userRepository = userRepository;
         _tokenRepository = tokenRepository;
         _emailService = emailService;
+        _activityLogRepository = activityLogRepository;
     }
 
     public async Task<ApiResponse<string>> Handle(
@@ -74,6 +80,23 @@ public class ForgotPasswordCommandHandler
         user.Email,
         resetLink,
         cancellationToken);
+
+        // 10. Create Activity Log
+        var activityLog = new ActivityLog
+        {
+            ActivityType = ActivityType.ResetPassword,
+            Message =
+                $"{user.FirstName} {user.LastName} requested a password reset.",
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _activityLogRepository.AddAsync(
+            activityLog,
+            cancellationToken);
+
+        await _activityLogRepository.SaveChangesAsync(
+            cancellationToken);
 
         return new ApiResponse<string>
         {

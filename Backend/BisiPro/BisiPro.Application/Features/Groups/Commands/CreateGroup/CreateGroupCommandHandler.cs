@@ -3,6 +3,7 @@ using BisiPro.Application.Mappings;
 using BisiPro.Contracts.Common;
 using BisiPro.Contracts.DTO_s.Groups;
 using BisiPro.Domain.Entities;
+using BisiPro.Domain.Enums;
 using MediatR;
 
 namespace BisiPro.Application.Features.Groups.Commands.CreateGroup
@@ -10,10 +11,12 @@ namespace BisiPro.Application.Features.Groups.Commands.CreateGroup
     public class CreateGroupCommandHandler :IRequestHandler<CreateGroupCommand, ApiResponse<CreateGroupResponse>>
     {
         private readonly IGroupRepository _groupRepository;
+        private readonly IActivityLogRepository _activityLogRepository;
 
-        public CreateGroupCommandHandler(IGroupRepository groupRepository)
+        public CreateGroupCommandHandler(IGroupRepository groupRepository, IActivityLogRepository activityLogRepository)
         {
             _groupRepository = groupRepository;
+            _activityLogRepository = activityLogRepository;
         }
 
         public async Task<ApiResponse<CreateGroupResponse>> Handle(CreateGroupCommand command, CancellationToken cancellationToken)
@@ -39,6 +42,23 @@ namespace BisiPro.Application.Features.Groups.Commands.CreateGroup
 
             await _groupRepository.SaveChangesAsync(
               cancellationToken);
+
+            // 4. Create Activity Log
+            var activityLog = new ActivityLog
+            {
+                ActivityType = ActivityType.GroupCreated,
+                Message =
+                    $"Group '{group.GroupName}' created successfully.",
+                UserId = command.AgentId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _activityLogRepository.AddAsync(
+                activityLog,
+                cancellationToken);
+
+            await _activityLogRepository.SaveChangesAsync(
+                cancellationToken);
 
             // Step 4 : Return Response
             return new ApiResponse<CreateGroupResponse>

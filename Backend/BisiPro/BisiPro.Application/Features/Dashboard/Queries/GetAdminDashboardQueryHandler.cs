@@ -27,6 +27,10 @@ namespace BisiPro.Application.Features.Dashboard.Queries
             var totalActiveMembers = await _dashboardRepository.GetTotalActiveMembersAsync(cancellationToken);
             var recentGroups = await _dashboardRepository.GetRecentGroupsAsync(5, cancellationToken);
             var recentMembers = await _dashboardRepository.GetRecentMembersAsync(5, cancellationToken);
+            var recentActivities =
+                 await _dashboardRepository.GetRecentActivitiesAsync(
+                      5,
+        cancellationToken);
 
             return new ApiResponse<AdminDashboardResponse>
             {
@@ -39,9 +43,11 @@ namespace BisiPro.Application.Features.Dashboard.Queries
                         TotalActiveGroups = totalActiveGroups,
                         TotalMembers = totalMembers,
                         TotalActiveMembers = totalActiveMembers
+
                     },
                     RecentGroups = recentGroups,
-                    RecentMembers = recentMembers
+                    RecentMembers = recentMembers,
+                    RecentActivities = recentActivities
                 }
             };
 
