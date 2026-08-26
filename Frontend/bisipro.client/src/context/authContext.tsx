@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 import type { AuthSession } from "@/services/authService"
 
-export type CurrentUser = Pick<AuthSession, "userId" | "fullName" | "email">
+export type CurrentUser = Pick<AuthSession, "userId" | "fullName" | "email" | "role">
 
 type AuthContextValue = {
   user: CurrentUser | null
@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userId: session.userId,
         fullName: session.fullName,
         email: session.email,
+        role: session.role,
       }
       localStorage.setItem(ACCESS_TOKEN_KEY, session.token)
       localStorage.setItem(USER_KEY, JSON.stringify(currentUser))

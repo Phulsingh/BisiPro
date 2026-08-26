@@ -68,7 +68,8 @@ namespace BisiPro.Application.Features.Authentications.Commands.Login
                     UserId = user.Id,
                     FullName = $"{user.FirstName} {user.LastName}",
                     Email = user.Email,
-                    Token = token
+                    Token = token,
+                    Role = user.Role.Name
                 }
             };
         }

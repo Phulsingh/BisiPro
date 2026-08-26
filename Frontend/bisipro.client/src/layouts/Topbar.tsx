@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/authContext"
-import { allNavigationItems } from "@/layouts/NavConfig"
+import { allNavigationItems, normaliseRole } from "@/layouts/NavConfig"
 
 export function Topbar() {
   const { pathname } = useLocation()
@@ -31,7 +31,7 @@ export function Topbar() {
         <Button variant="ghost" size="icon" className="relative text-[#38584f] hover:bg-[#eef5f0]" aria-label="Notifications"><Bell /><span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#d8534f] ring-2 ring-white" /></Button>
         <div className="ml-1 hidden items-center gap-2 border-l border-[#e2ebe6] pl-3 sm:flex">
           <span className="flex size-9 items-center justify-center rounded-full bg-[#183f37] text-xs font-bold text-[#d9f0c9]">{initials}</span>
-          <span className="hidden pr-1 lg:block"><span className="block text-sm font-bold leading-4 text-[#183630]">{user?.fullName || "BisiPro user"}</span><span className="block text-xs text-[#789088]">Workspace member</span></span>
+          <span className="hidden pr-1 lg:block"><span className="block text-sm font-bold leading-4 text-[#183630]">{user?.fullName || "BisiPro user"}</span><span className="block text-xs text-[#789088] capitalize">{normaliseRole(user?.role)}</span></span>
           <Button variant="ghost" size="icon-sm" onClick={logout} className="text-[#789088] hover:bg-[#fdf0ef] hover:text-[#bf403d]" aria-label="Sign out"><LogOut /></Button>
         </div>
       </div>
