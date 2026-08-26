@@ -19,6 +19,8 @@ export type AuthSession = {
   fullName: string
   email: string
   token: string
+  /** Role name as issued by the backend, e.g. "Admin" | "Agent" | "User" */
+  role: string
 }
 
 /** The authentication envelope returned by the BisiPro backend. */

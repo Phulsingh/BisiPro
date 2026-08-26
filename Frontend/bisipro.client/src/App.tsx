@@ -31,7 +31,7 @@ function App() {
               <Route element={<MainLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/groups" element={<GroupsPage />} />
-                <Route path="/group/members" element={<GroupMemberPage />} />
+                <Route path="/members" element={<GroupMemberPage />} />
                 <Route path="/group/members/:userId" element={<GroupMemberDetails />} />
               </Route>
             </Route>
