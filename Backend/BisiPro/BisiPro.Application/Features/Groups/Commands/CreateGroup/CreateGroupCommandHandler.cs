@@ -34,6 +34,7 @@ namespace BisiPro.Application.Features.Groups.Commands.CreateGroup
             }
 
             var group = command.Request.ToEntity(command.AgentId);
+            group.CreatedAt = DateTime.UtcNow;
 
             // Step 3 : Save Group
             await _groupRepository.AddAsync(

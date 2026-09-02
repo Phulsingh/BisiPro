@@ -113,7 +113,8 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
                 UserId = user.Id,
                 PayableAmount = payableAmount,
                 JoinedDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                IsActive = true
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
 
             // 9. Save

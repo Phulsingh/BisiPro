@@ -51,6 +51,7 @@ namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
 
             // Step 4: Soft Delete
             group.IsActive = false;
+            group.UpdatedAt = DateTime.UtcNow;
 
             // Step 5: Update
             await _groupRepository.UpdateAsync(

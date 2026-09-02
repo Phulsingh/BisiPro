@@ -5,7 +5,6 @@ using BisiPro.Contracts.Common;
 using BisiPro.Domain.Entities;
 using BisiPro.Domain.Enums;
 using MediatR;
-using System.Data;
 
 namespace BisiPro.Application.Features.Authentications.Commands.Register
 {
