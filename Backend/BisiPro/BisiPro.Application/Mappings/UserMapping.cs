@@ -14,7 +14,7 @@ namespace BisiPro.Application.Mappings
                 FirstName = user.FirstName,  
                 LastName = user.LastName,
                 Email = user.Email,
-                DateOfBirth = user.DateOfBirth.ToString("yyyy-MM-dd"),
+                //DateOfBirth = user.DateOfBirth.ToString("yyyy-MM-dd"),
                 PhoneNumber = user.PhoneNumber,
                 IsActive = user.IsActive,
 

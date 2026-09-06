@@ -83,7 +83,11 @@ export function LoginForm({
           <div className="h-px flex-1 bg-[#d9e2dc]" />
         </div>
 
-        <Button variant="outline" type="button" className="h-12 w-full rounded-xl border-[#cedbd3] bg-white text-sm font-semibold text-[#29463f] hover:border-[#b3c3ba] hover:bg-[#f8faf8]">
+        <Button 
+        onClick={() => {
+        window.location.href = "https://localhost:7081/api/auth/google"
+        }}
+        variant="outline" type="button" className="h-12 w-full rounded-xl border-[#cedbd3] bg-white text-sm font-semibold text-[#29463f] hover:border-[#b3c3ba] hover:bg-[#f8faf8]">
           <svg className="size-[18px]" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#4285F4" d="M21.35 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.24a4.48 4.48 0 0 1-1.94 2.94v2.52h3.15c1.85-1.7 2.9-4.21 2.9-7.29Z" />
             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.23L15.3 17c-.87.58-1.98.92-3.3.92-2.54 0-4.7-1.72-5.47-4.03H3.28v2.6A9.75 9.75 0 0 0 12 21.75Z" />
