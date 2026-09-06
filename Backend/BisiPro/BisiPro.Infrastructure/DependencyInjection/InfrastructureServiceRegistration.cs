@@ -51,6 +51,8 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
 
+            services.AddScoped<IExternalLoginRepository, ExternalLoginRepository>();
+
 
             return services;
         }

@@ -9,6 +9,7 @@ import { MainLayout } from "./layouts/MainLayout";
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const AuthCallback = lazy(() => import("./context/AuthCallback"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const GroupsPage = lazy(() => import("./pages/GroupsPage"));
 const GroupMemberPage = lazy(() => import("./pages/GroupMemberPage"));
@@ -23,16 +24,17 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
 
             <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/groups" element={<GroupsPage />} />
-                <Route path="/members" element={<GroupMemberPage />} />
-                <Route path="/group/members/:userId" element={<GroupMemberDetails />} />
+                <Route path="/dashboard" element={<Dashboard />}/>
+                <Route path="/groups" element={<GroupsPage />}/>
+                <Route path="/members" element={<GroupMemberPage/>}/>
+                <Route path="/group/members/:userId" element={<GroupMemberDetails />}/>
               </Route>
             </Route>
           </Routes>

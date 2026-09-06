@@ -1,13 +1,17 @@
 ﻿using BisiPro.Application.Features.Authentications.Commands.Login;
 using BisiPro.Application.Features.Authentications.Commands.Register;
+using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
 using BisiPro.Application.Features.Authentications.ForgotPassword;
 using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
 using BisiPro.Application.Features.Authentications.ResetPassword;
 using BisiPro.Contracts.Authentication;
 using BisiPro.Contracts.DTO_s.Groups;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;  
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 namespace BisiPro.Api.Controllers
@@ -18,6 +22,7 @@ namespace BisiPro.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<AuthController> _logger;
+
 
         public AuthController(IMediator mediator, ILogger<AuthController> logger)
         {
@@ -114,6 +119,145 @@ namespace BisiPro.Api.Controllers
                     c.Value
                 })
             });
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpGet("google")]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = "/api/auth/google-callback"
+            };
+
+            return Challenge(
+                properties,
+                GoogleDefaults.AuthenticationScheme);
+        }
+
+        // ============================================================
+        // Google Callback
+        // ============================================================
+
+        [AllowAnonymous]
+        [HttpGet("google-callback")]
+        public async Task<IActionResult> GoogleCallback(
+       CancellationToken cancellationToken)
+        {
+            // ============================================================
+            // Get Google Authentication Result
+            // ============================================================
+
+            var result = await HttpContext.AuthenticateAsync(
+                "ExternalCookie");
+
+            if (!result.Succeeded || result.Principal == null)
+            {
+                return BadRequest(new
+                {
+                    IsSuccess = false,
+                    Error = "Google authentication failed.",
+                    Details = result.Failure?.Message
+                });
+            }
+
+            var principal = result.Principal;
+
+
+            // ============================================================
+            // Extract Google Claims
+            // ============================================================
+
+            var providerKey =
+                principal.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            var email =
+                principal.FindFirstValue(
+                    ClaimTypes.Email);
+
+            var firstName =
+                principal.FindFirstValue(
+                    ClaimTypes.GivenName);
+
+            var lastName =
+                principal.FindFirstValue(
+                    ClaimTypes.Surname);
+
+
+            // ============================================================
+            // Validate Google Claims
+            // ============================================================
+
+            if (string.IsNullOrWhiteSpace(providerKey))
+            {
+                await HttpContext.SignOutAsync("ExternalCookie");
+
+                return BadRequest(new
+                {
+                    IsSuccess = false,
+                    Error = "Google user ID was not provided."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                await HttpContext.SignOutAsync("ExternalCookie");
+
+                return BadRequest(new
+                {
+                    IsSuccess = false,
+                    Error = "Google email was not provided."
+                });
+            }
+
+
+            // ============================================================
+            // Create External Login Command
+            // ============================================================
+
+            var command = new ExternalLoginCommand(
+                provider: "Google",
+                providerKey: providerKey,
+                email: email,
+                firstName: firstName ?? string.Empty,
+                lastName: lastName ?? string.Empty);
+
+
+            // ============================================================
+            // Send Command to Application Layer
+            // ============================================================
+
+            var response = await _mediator.Send(
+                command,
+                cancellationToken);
+
+
+            // ============================================================
+            // Clear Temporary External Authentication Cookie
+            // ============================================================
+
+            await HttpContext.SignOutAsync("ExternalCookie");
+
+
+            // ============================================================
+            // Return Result
+            // ============================================================
+
+            if (!response.IsSuccess)
+            {
+                return Unauthorized(response);
+            }
+
+            return Redirect(
+            $"https://localhost:55344/auth/callback" +
+            $"?token={Uri.EscapeDataString(response.Data.Token)}" +
+            $"&userId={Uri.EscapeDataString(response.Data.UserId.ToString())}" +
+            $"&fullName={Uri.EscapeDataString(response.Data.FullName)}" +
+            $"&email={Uri.EscapeDataString(response.Data.Email)}" +
+            $"&role={Uri.EscapeDataString(response.Data.Role)}");
         }
     }
 }

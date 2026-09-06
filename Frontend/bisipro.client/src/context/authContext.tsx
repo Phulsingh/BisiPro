@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import type { AuthSession } from "@/services/authService"
@@ -43,32 +43,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const value = useMemo<AuthContextValue>(() => ({
+const signIn = useCallback((session: AuthSession) => {
+  const currentUser: CurrentUser = {
+    userId: session.userId,
+    fullName: session.fullName,
+    email: session.email,
+    role: session.role,
+  }
+
+  localStorage.setItem(ACCESS_TOKEN_KEY, session.token)
+  localStorage.setItem(USER_KEY, JSON.stringify(currentUser))
+
+  setToken(session.token)
+  setUser(currentUser)
+}, [])
+
+const logout = useCallback(() => {
+  localStorage.removeItem(ACCESS_TOKEN_KEY)
+  localStorage.removeItem(USER_KEY)
+  localStorage.removeItem("refreshToken")
+
+  setToken(null)
+  setUser(null)
+
+  navigate("/login", { replace: true })
+}, [navigate])
+
+const value = useMemo<AuthContextValue>(
+  () => ({
     user,
     token,
     isAuthenticated: Boolean(token && user),
     isInitializing,
-    signIn: (session) => {
-      const currentUser: CurrentUser = {
-        userId: session.userId,
-        fullName: session.fullName,
-        email: session.email,
-        role: session.role,
-      }
-      localStorage.setItem(ACCESS_TOKEN_KEY, session.token)
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser))
-      setToken(session.token)
-      setUser(currentUser)
-    },
-    logout: () => {
-      localStorage.removeItem(ACCESS_TOKEN_KEY)
-      localStorage.removeItem(USER_KEY)
-      localStorage.removeItem("refreshToken")
-      setToken(null)
-      setUser(null)
-      navigate("/login", { replace: true })
-    },
-  }), [isInitializing, navigate, token, user])
+    signIn,
+    logout,
+  }),
+  [user, token, isInitializing, signIn, logout]
+)
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

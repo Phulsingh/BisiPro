@@ -8,7 +8,7 @@ namespace BisiPro.Domain.Entities
         public required string FirstName { get; set; } = string.Empty;
         public required string LastName { get; set; } = string.Empty;
         public required string Email { get; set; } = string.Empty;
-        public required DateOnly DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; } = null;
         public required string PhoneNumber { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
