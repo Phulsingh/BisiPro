@@ -53,6 +53,8 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             services.AddScoped<IExternalLoginRepository, ExternalLoginRepository>();
 
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
             return services;
         }

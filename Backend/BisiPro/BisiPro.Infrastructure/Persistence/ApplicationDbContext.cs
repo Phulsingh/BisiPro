@@ -70,5 +70,6 @@ namespace BisiPro.Infrastructure.Persistence
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
         public DbSet<ExternalLogin> ExternalLogins { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }

@@ -15,6 +15,9 @@ export function AuthCallback() {
     const fullName = searchParams.get("fullName")
     const email = searchParams.get("email")
     const role = searchParams.get("role")
+    // External login only carries a refresh token once the backend redirect
+    // includes one; without it the session simply ends when the token expires.
+    const refreshToken = searchParams.get("refreshToken") ?? ""
 
     if (!token || !userId || !fullName || !email || !role) {
       navigate("/login", { replace: true })
@@ -26,6 +29,7 @@ export function AuthCallback() {
       fullName,
       email,
       token,
+      refreshToken,
       role,
     }
 
@@ -44,3 +48,5 @@ export function AuthCallback() {
     </div>
   )
 }
+
+export default AuthCallback
