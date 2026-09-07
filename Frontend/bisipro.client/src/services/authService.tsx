@@ -1,4 +1,5 @@
 import { apiService, type ApiResponse } from "@/config/apiService"
+import { refreshSession } from "@/config/axiosConfig"
 
 export type LoginRequest = {
   email: string
@@ -19,7 +20,7 @@ export type AuthSession = {
   fullName: string
   email: string
   token: string
-  /** Role name as issued by the backend, e.g. "Admin" | "Agent" | "User" */
+  refreshToken: string
   role: string
 }
 
@@ -45,6 +46,17 @@ export const authService = {
       token,
       newPassword
     })
+  },
+
+  /**
+   * Exchanges the stored refresh token for a new session. Expired access tokens
+   * are already refreshed automatically by the axios interceptor; call this
+   * only to renew the session ahead of a request.
+   *
+   * @returns the new access token, or null when the session can no longer be renewed.
+   */
+  refresh() {
+    return refreshSession()
   }
 
 }

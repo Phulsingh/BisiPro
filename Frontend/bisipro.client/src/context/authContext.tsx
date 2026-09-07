@@ -1,6 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { SESSION_EXPIRED_EVENT, tokenStorage } from "@/config/tokenStorage"
 import type { AuthSession } from "@/services/authService"
 
 export type CurrentUser = Pick<AuthSession, "userId" | "fullName" | "email" | "role">
@@ -8,78 +9,83 @@ export type CurrentUser = Pick<AuthSession, "userId" | "fullName" | "email" | "r
 type AuthContextValue = {
   user: CurrentUser | null
   token: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
   isInitializing: boolean
   signIn: (session: AuthSession) => void
   logout: () => void
 }
 
-const ACCESS_TOKEN_KEY = "accessToken"
-const USER_KEY = "user"
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const [token, setToken] = useState<string | null>(null)
+  const [refreshToken, setRefreshToken] = useState<string | null>(null)
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
 
   useEffect(() => {
-    const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY)
-    const storedUser = localStorage.getItem(USER_KEY)
+    const storedToken = tokenStorage.getAccessToken()
+    const storedUser = tokenStorage.getUser()
+
     if (!storedToken || !storedUser) {
+      tokenStorage.clear()
       setIsInitializing(false)
       return
     }
 
-    try {
-      setToken(storedToken)
-      setUser(JSON.parse(storedUser) as CurrentUser)
-    } catch {
-      localStorage.removeItem(ACCESS_TOKEN_KEY)
-      localStorage.removeItem(USER_KEY)
-    } finally {
-      setIsInitializing(false)
-    }
+    setToken(storedToken)
+    setRefreshToken(tokenStorage.getRefreshToken())
+    setUser(storedUser)
+    setIsInitializing(false)
   }, [])
 
-const signIn = useCallback((session: AuthSession) => {
-  const currentUser: CurrentUser = {
-    userId: session.userId,
-    fullName: session.fullName,
-    email: session.email,
-    role: session.role,
-  }
+  const signIn = useCallback((session: AuthSession) => {
+    const currentUser = tokenStorage.saveSession(session)
 
-  localStorage.setItem(ACCESS_TOKEN_KEY, session.token)
-  localStorage.setItem(USER_KEY, JSON.stringify(currentUser))
+    setToken(session.token)
+    setRefreshToken(tokenStorage.getRefreshToken())
+    setUser(currentUser)
+  }, [])
 
-  setToken(session.token)
-  setUser(currentUser)
-}, [])
+  const clearSession = useCallback(() => {
+    tokenStorage.clear()
 
-const logout = useCallback(() => {
-  localStorage.removeItem(ACCESS_TOKEN_KEY)
-  localStorage.removeItem(USER_KEY)
-  localStorage.removeItem("refreshToken")
+    setToken(null)
+    setRefreshToken(null)
+    setUser(null)
+  }, [])
 
-  setToken(null)
-  setUser(null)
+  const logout = useCallback(() => {
+    clearSession()
+    navigate("/login", { replace: true })
+  }, [clearSession, navigate])
 
-  navigate("/login", { replace: true })
-}, [navigate])
+  // The axios interceptor raises this once a refresh token can no longer renew
+  // the session, so React state has to catch up with the cleared storage.
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      clearSession()
+      navigate("/login", { replace: true })
+    }
 
-const value = useMemo<AuthContextValue>(
-  () => ({
-    user,
-    token,
-    isAuthenticated: Boolean(token && user),
-    isInitializing,
-    signIn,
-    logout,
-  }),
-  [user, token, isInitializing, signIn, logout]
-)
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+  }, [clearSession, navigate])
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      token,
+      refreshToken,
+      isAuthenticated: Boolean(token && user),
+      isInitializing,
+      signIn,
+      logout,
+    }),
+    [user, token, refreshToken, isInitializing, signIn, logout]
+  )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

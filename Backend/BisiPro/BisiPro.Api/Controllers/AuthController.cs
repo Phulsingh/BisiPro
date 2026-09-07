@@ -1,6 +1,7 @@
-﻿using BisiPro.Application.Features.Authentications.Commands.Login;
+﻿using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
+using BisiPro.Application.Features.Authentications.Commands.Login;
+using BisiPro.Application.Features.Authentications.Commands.RefreshToken;
 using BisiPro.Application.Features.Authentications.Commands.Register;
-using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
 using BisiPro.Application.Features.Authentications.ForgotPassword;
 using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
 using BisiPro.Application.Features.Authentications.ResetPassword;
@@ -39,7 +40,7 @@ namespace BisiPro.Api.Controllers
         {
             var command = new RegisterCommand(request);
             var result = await _mediator.Send(command);
-            
+
             if (!result.IsSuccess)
             {
                 return BadRequest(result);
@@ -258,6 +259,31 @@ namespace BisiPro.Api.Controllers
             $"&fullName={Uri.EscapeDataString(response.Data.FullName)}" +
             $"&email={Uri.EscapeDataString(response.Data.Email)}" +
             $"&role={Uri.EscapeDataString(response.Data.Role)}");
+        }
+
+
+        // -------------------------------
+        // Refresh Token
+        // -------------------------------
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken(
+            [FromBody] RefreshTokenRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new RefreshTokenCommand(
+                request.RefreshToken);
+
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return Unauthorized(result);
+            }
+
+            return Ok(result);
         }
     }
 }
