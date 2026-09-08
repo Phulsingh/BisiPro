@@ -1,5 +1,5 @@
 import { apiService, type ApiResponse } from "@/config/apiService"
-import { refreshSession } from "@/config/axiosConfig"
+import { endSession, refreshSession } from "@/config/axiosConfig"
 
 export type LoginRequest = {
   email: string
@@ -15,12 +15,16 @@ export type RegisterRequest = {
   password: string
 }
 
+/**
+ * What the API returns on a successful sign in. The refresh token is absent by
+ * design: the backend puts it in an HttpOnly cookie the browser manages, so no
+ * JavaScript in this app can ever read it.
+ */
 export type AuthSession = {
   userId: string
   fullName: string
   email: string
   token: string
-  refreshToken: string
   role: string
 }
 
@@ -49,14 +53,19 @@ export const authService = {
   },
 
   /**
-   * Exchanges the stored refresh token for a new session. Expired access tokens
-   * are already refreshed automatically by the axios interceptor; call this
-   * only to renew the session ahead of a request.
+   * Renews the session from the refresh cookie. Expired access tokens are
+   * already refreshed automatically by the axios interceptor; call this only to
+   * renew ahead of a request.
    *
    * @returns the new access token, or null when the session can no longer be renewed.
    */
   refresh() {
     return refreshSession()
+  },
+
+  /** Revokes the refresh token on the server and clears its cookie. */
+  logout() {
+    return endSession()
   }
 
 }

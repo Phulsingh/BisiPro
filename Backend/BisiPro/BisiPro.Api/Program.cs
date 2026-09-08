@@ -1,4 +1,4 @@
-using BisiPro.Api.Middlewares;
+﻿using BisiPro.Api.Middlewares;
 using BisiPro.Application.DependencyInjection;
 using BisiPro.Infrastructure.Authentication;
 using BisiPro.Infrastructure.DependencyInjection;
@@ -26,7 +26,12 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("https://localhost:55344")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+
+            // The refresh token travels as an HttpOnly cookie, and the browser
+            // only sends cookies cross-origin when credentials are allowed.
+            // This needs the explicit origin above; "*" is rejected with it.
+            .AllowCredentials();
     });
 });
 

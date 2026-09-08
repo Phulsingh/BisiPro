@@ -4,22 +4,17 @@ import type { AuthSession } from "@/services/authService"
 export type StoredUser = Pick<AuthSession, "userId" | "fullName" | "email" | "role">
 
 const ACCESS_TOKEN_KEY = "accessToken"
-const REFRESH_TOKEN_KEY = "refreshToken"
 const USER_KEY = "user"
 
 /**
- * Raised when the access token expired and the refresh token could not renew
- * it. AuthProvider listens for this and sends the user back to the login page.
+ * The refresh token is deliberately absent here. The backend keeps it in an
+ * HttpOnly cookie, which this code cannot read or write, so a script injected
+ * into the page cannot steal a long-lived credential. The browser attaches the
+ * cookie to `auth/refresh` and `auth/logout` on its own.
  */
-export const SESSION_EXPIRED_EVENT = "auth:session-expired"
-
 export const tokenStorage = {
   getAccessToken(): string | null {
     return localStorage.getItem(ACCESS_TOKEN_KEY)
-  },
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_TOKEN_KEY)
   },
 
   getUser(): StoredUser | null {
@@ -45,21 +40,22 @@ export const tokenStorage = {
     localStorage.setItem(ACCESS_TOKEN_KEY, session.token)
     localStorage.setItem(USER_KEY, JSON.stringify(user))
 
-    // The backend rotates the refresh token on every refresh, so an empty
-    // value must never overwrite a usable one.
-    if (session.refreshToken) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken)
-    }
-
     return user
   },
 
   clear(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY)
-    localStorage.removeItem(REFRESH_TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
+    // Left over from the previous localStorage-based implementation.
+    localStorage.removeItem("refreshToken")
   },
 }
+
+/**
+ * Raised when the access token expired and the refresh cookie could not renew
+ * it. AuthProvider listens for this and sends the user back to the login page.
+ */
+export const SESSION_EXPIRED_EVENT = "auth:session-expired"
 
 export function notifySessionExpired(): void {
   window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
