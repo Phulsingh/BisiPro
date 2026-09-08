@@ -10,6 +10,9 @@ type RetriableRequest = InternalAxiosRequestConfig & { _retriedAfterRefresh?: bo
 export const apiClient = axios.create({
   timeout: 30_000,
   headers: { Accept: "application/json" },
+
+  // Sends the HttpOnly refresh cookie to the API, which lives on another origin.
+  withCredentials: true,
 })
 
 /**
@@ -19,6 +22,7 @@ export const apiClient = axios.create({
 const refreshClient = axios.create({
   timeout: 30_000,
   headers: { Accept: "application/json" },
+  withCredentials: true,
 })
 
 /** Endpoints that issue tokens: a 401 from these is a real failure, not an expiry. */
@@ -26,6 +30,7 @@ const TOKEN_ENDPOINTS = [
   "auth/login",
   "auth/register",
   "auth/refresh",
+  "auth/logout",
   "auth/forgot-password",
   "auth/reset-password",
 ]
@@ -49,15 +54,18 @@ apiClient.interceptors.request.use((request) => {
  */
 let refreshRequest: Promise<string | null> | null = null
 
-/** Exchanges the stored refresh token for a new session. Returns the new access token. */
+/**
+ * Renews the session. The refresh token itself is never passed here: the
+ * browser attaches the HttpOnly cookie, and the backend sets the rotated one on
+ * the response.
+ *
+ * @returns the new access token, or null when the session cannot be renewed.
+ */
 export async function refreshSession(): Promise<string | null> {
-  const refreshToken = tokenStorage.getRefreshToken()
-  if (!refreshToken) return null
-
   try {
     const response = await refreshClient.post<ApiResponse<AuthSession>>(
       "auth/refresh",
-      { refreshToken },
+      null,
       { baseURL: apiClient.defaults.baseURL }
     )
 
@@ -68,6 +76,15 @@ export async function refreshSession(): Promise<string | null> {
     return session.token
   } catch {
     return null
+  }
+}
+
+/** Revokes the refresh token server-side and clears its cookie. */
+export async function endSession(): Promise<void> {
+  try {
+    await refreshClient.post("auth/logout", null, { baseURL: apiClient.defaults.baseURL })
+  } catch {
+    // Signing out locally still has to succeed when the API is unreachable.
   }
 }
 

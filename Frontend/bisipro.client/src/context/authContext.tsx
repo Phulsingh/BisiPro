@@ -2,14 +2,13 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { useNavigate } from "react-router-dom"
 
 import { SESSION_EXPIRED_EVENT, tokenStorage } from "@/config/tokenStorage"
-import type { AuthSession } from "@/services/authService"
+import { authService, type AuthSession } from "@/services/authService"
 
 export type CurrentUser = Pick<AuthSession, "userId" | "fullName" | "email" | "role">
 
 type AuthContextValue = {
   user: CurrentUser | null
   token: string | null
-  refreshToken: string | null
   isAuthenticated: boolean
   isInitializing: boolean
   signIn: (session: AuthSession) => void
@@ -21,7 +20,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const [token, setToken] = useState<string | null>(null)
-  const [refreshToken, setRefreshToken] = useState<string | null>(null)
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
 
@@ -36,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setToken(storedToken)
-    setRefreshToken(tokenStorage.getRefreshToken())
     setUser(storedUser)
     setIsInitializing(false)
   }, [])
@@ -45,7 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const currentUser = tokenStorage.saveSession(session)
 
     setToken(session.token)
-    setRefreshToken(tokenStorage.getRefreshToken())
     setUser(currentUser)
   }, [])
 
@@ -53,17 +49,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStorage.clear()
 
     setToken(null)
-    setRefreshToken(null)
     setUser(null)
   }, [])
 
   const logout = useCallback(() => {
+    // Only the server can drop the HttpOnly refresh cookie, and revoking the
+    // token there stops the session being renewed after sign out.
+    void authService.logout()
+
     clearSession()
     navigate("/login", { replace: true })
   }, [clearSession, navigate])
 
-  // The axios interceptor raises this once a refresh token can no longer renew
-  // the session, so React state has to catch up with the cleared storage.
+  // The axios interceptor raises this once the refresh cookie can no longer
+  // renew the session, so React state has to catch up with the cleared storage.
   useEffect(() => {
     const handleSessionExpired = () => {
       clearSession()
@@ -78,13 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       token,
-      refreshToken,
       isAuthenticated: Boolean(token && user),
       isInitializing,
       signIn,
       logout,
     }),
-    [user, token, refreshToken, isInitializing, signIn, logout]
+    [user, token, isInitializing, signIn, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

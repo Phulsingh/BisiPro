@@ -1,11 +1,14 @@
 ﻿using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
 using BisiPro.Application.Features.Authentications.Commands.Login;
+using BisiPro.Api.Authentication;
 using BisiPro.Application.Features.Authentications.Commands.RefreshToken;
+using BisiPro.Application.Features.Authentications.Commands.RevokeRefreshToken;
 using BisiPro.Application.Features.Authentications.Commands.Register;
 using BisiPro.Application.Features.Authentications.ForgotPassword;
 using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
 using BisiPro.Application.Features.Authentications.ResetPassword;
 using BisiPro.Contracts.Authentication;
+using BisiPro.Contracts.Common;
 using BisiPro.Contracts.DTO_s.Groups;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;  
@@ -62,6 +65,8 @@ namespace BisiPro.Api.Controllers
             {
                 return Unauthorized(result);
             }
+
+            MoveRefreshTokenToCookie(result.Data);
 
             return Ok(result);
         }
@@ -252,6 +257,10 @@ namespace BisiPro.Api.Controllers
                 return Unauthorized(response);
             }
 
+            // The refresh token goes into the HttpOnly cookie rather than the
+            // redirect URL, which would otherwise leak it into browser history.
+            MoveRefreshTokenToCookie(response.Data);
+
             return Redirect(
             $"https://localhost:55344/auth/callback" +
             $"?token={Uri.EscapeDataString(response.Data.Token)}" +
@@ -268,11 +277,22 @@ namespace BisiPro.Api.Controllers
         [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(
-            [FromBody] RefreshTokenRequest request,
             CancellationToken cancellationToken)
         {
-            var command = new RefreshTokenCommand(
-                request.RefreshToken);
+            // The client never holds the refresh token, so it arrives only as
+            // the HttpOnly cookie the browser attaches to this request.
+            var refreshToken = RefreshTokenCookie.Read(Request);
+
+            if (refreshToken == null)
+            {
+                return Unauthorized(new ApiResponse<LoginResponse>
+                {
+                    IsSuccess = false,
+                    Error = "Refresh token is missing."
+                });
+            }
+
+            var command = new RefreshTokenCommand(refreshToken);
 
             var result = await _mediator.Send(
                 command,
@@ -280,10 +300,67 @@ namespace BisiPro.Api.Controllers
 
             if (!result.IsSuccess)
             {
+                // Expired, revoked or unknown: clear it so the browser stops
+                // replaying a token that can never work again.
+                RefreshTokenCookie.Delete(Response);
+
                 return Unauthorized(result);
             }
 
+            MoveRefreshTokenToCookie(result.Data);
+
             return Ok(result);
+        }
+
+
+        // -------------------------------
+        // Logout
+        // -------------------------------
+        [AllowAnonymous]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(
+            CancellationToken cancellationToken)
+        {
+            var refreshToken = RefreshTokenCookie.Read(Request);
+
+            if (refreshToken != null)
+            {
+                await _mediator.Send(
+                    new RevokeRefreshTokenCommand(refreshToken),
+                    cancellationToken);
+            }
+
+            RefreshTokenCookie.Delete(Response);
+
+            return Ok(new ApiResponse<bool>
+            {
+                IsSuccess = true,
+                Data = true
+            });
+        }
+
+
+        // -------------------------------
+        // Refresh Token Cookie
+        // -------------------------------
+
+        /// <summary>
+        /// Writes the freshly issued refresh token to the HttpOnly cookie and
+        /// strips it from the response body, so it never reaches JavaScript.
+        /// </summary>
+        private void MoveRefreshTokenToCookie(LoginResponse? response)
+        {
+            if (response == null ||
+                string.IsNullOrWhiteSpace(response.RefreshToken))
+            {
+                return;
+            }
+
+            RefreshTokenCookie.Write(
+                Response,
+                response.RefreshToken);
+
+            response.RefreshToken = string.Empty;
         }
     }
 }

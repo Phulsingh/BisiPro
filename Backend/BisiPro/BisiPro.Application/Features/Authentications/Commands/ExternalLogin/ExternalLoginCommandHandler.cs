@@ -16,17 +16,52 @@ namespace BisiPro.Application.Features.Authentications.Commands.ExternalLogin
         private readonly IRoleRepository _roleRepository;
         private readonly IExternalLoginRepository _externalLoginRepository;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
         public ExternalLoginCommandHandler(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             IExternalLoginRepository externalLoginRepository,
-            IJwtTokenService jwtTokenService)
+            IJwtTokenService jwtTokenService,
+            IRefreshTokenService refreshTokenService,
+            IRefreshTokenRepository refreshTokenRepository)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _externalLoginRepository = externalLoginRepository;
             _jwtTokenService = jwtTokenService;
+            _refreshTokenService = refreshTokenService;
+            _refreshTokenRepository = refreshTokenRepository;
+        }
+
+        /// <summary>
+        /// Issues and stores a refresh token so a Google session can be renewed
+        /// exactly like a password session.
+        /// </summary>
+        private async Task<string> IssueRefreshTokenAsync(
+            User user,
+            CancellationToken cancellationToken)
+        {
+            var refreshToken = _refreshTokenService.GenerateToken();
+
+            var refreshTokenEntity = new Domain.Entities.RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                TokenHash = _refreshTokenService.HashToken(refreshToken),
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _refreshTokenRepository.AddAsync(
+                refreshTokenEntity,
+                cancellationToken);
+
+            await _refreshTokenRepository.SaveChangesAsync(
+                cancellationToken);
+
+            return refreshToken;
         }
 
         public async Task<ApiResponse<LoginResponse>> Handle(
@@ -63,6 +98,11 @@ namespace BisiPro.Application.Features.Authentications.Commands.ExternalLogin
                 var token =
                     _jwtTokenService.GenerateToken(existingUser);
 
+                var existingUserRefreshToken =
+                    await IssueRefreshTokenAsync(
+                        existingUser,
+                        cancellationToken);
+
                 return new ApiResponse<LoginResponse>
                 {
                     IsSuccess = true,
@@ -73,7 +113,8 @@ namespace BisiPro.Application.Features.Authentications.Commands.ExternalLogin
                             $"{existingUser.FirstName} {existingUser.LastName}",
                         Email = existingUser.Email,
                         Role = existingUser.Role.Name,
-                        Token = token
+                        Token = token,
+                        RefreshToken = existingUserRefreshToken
                     }
                 };
             }
@@ -190,6 +231,11 @@ namespace BisiPro.Application.Features.Authentications.Commands.ExternalLogin
             var jwtToken =
                 _jwtTokenService.GenerateToken(user);
 
+            var refreshToken =
+                await IssueRefreshTokenAsync(
+                    user,
+                    cancellationToken);
+
             // ========================================================
             // 8. Return Login Response
             // ========================================================
@@ -208,7 +254,9 @@ namespace BisiPro.Application.Features.Authentications.Commands.ExternalLogin
 
                     Role = user.Role.Name,
 
-                    Token = jwtToken
+                    Token = jwtToken,
+
+                    RefreshToken = refreshToken
                 }
             };
         }
