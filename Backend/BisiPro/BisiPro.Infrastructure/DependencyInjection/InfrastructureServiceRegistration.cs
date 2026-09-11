@@ -1,9 +1,10 @@
 ﻿using BisiPro.Application.Interfaces;
 using BisiPro.Application.Interfaces.Repositories;
+using BisiPro.Infrastructure.AI.Gemini;
 using BisiPro.Infrastructure.Authentication;
+using BisiPro.Infrastructure.Email;
 using BisiPro.Infrastructure.Persistence;
 using BisiPro.Infrastructure.Repositories;
-using BisiPro.Infrastructure.Email;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,9 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+            services.Configure<GeminiOptions>(configuration.GetSection("AI:Gemini"));
+            services.AddHttpClient<IAIChatService, GeminiAIChatService>();
 
             return services;
         }
