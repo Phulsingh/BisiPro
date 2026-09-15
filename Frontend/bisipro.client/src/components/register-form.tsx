@@ -1,4 +1,4 @@
-import { ArrowRight, LockKeyhole } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, LockKeyhole } from "lucide-react"
 import { isAxiosError } from "axios"
 import { type FormEvent, useState } from "react"
 import { Link } from "react-router-dom"
@@ -17,6 +17,7 @@ export function RegisterForm({
 }: React.ComponentProps<"div">) {
   const [errorMessage, setErrorMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -90,17 +91,22 @@ export function RegisterForm({
 
         <div className="space-y-2">
           <label htmlFor="password" className={labelClassName}>Password</label>
-          <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="Create a secure password" required minLength={8} className={inputClassName} />
+          <div className="relative">
+            <Input id="password" name="password" type={isPasswordVisible ? "text" : "password"} autoComplete="new-password" placeholder="Create a secure password" required minLength={8} className={`${inputClassName} pr-12`} />
+            <button type="button" onClick={() => setIsPasswordVisible((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-12 cursor-pointer items-center justify-center text-[#60736c] hover:text-[#078a76] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#078a76]/20" aria-label={isPasswordVisible ? "Hide password" : "Show password"} aria-pressed={isPasswordVisible}>
+              {isPasswordVisible ? <EyeOff className="size-5" aria-hidden="true" /> : <Eye className="size-5" aria-hidden="true" />}
+            </button>
+          </div>
           <p className="text-xs leading-5 text-[#788b83]">Use at least 8 characters, including a letter and a number.</p>
         </div>
 
         {errorMessage && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>}
 
-        <Button type="submit" disabled={isSubmitting} className="mt-2 h-12 w-full rounded-xl bg-[#078a76] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(7,138,118,0.18)] hover:bg-[#056c5c]">
+        <Button type="submit" disabled={isSubmitting} className="mt-2 h-12 w-full cursor-pointer rounded-xl bg-[#078a76] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(7,138,118,0.18)] hover:bg-[#056c5c] disabled:cursor-not-allowed">
           {isSubmitting ? "Creating your account…" : "Create BisiPro account"} <ArrowRight className="size-4 transition-transform group-hover/button:translate-x-0.5" />
         </Button>
 
-        <p className="pt-1 text-center text-sm text-[#60736c]">Already have an account? <Link to="/login" className="font-bold text-[#078a76] underline-offset-4 hover:underline">Sign in</Link></p>
+        <p className="pt-1 text-center text-sm text-[#60736c]">Already have an account? <Link to="/login" className="cursor-pointer font-bold text-[#078a76] underline-offset-4 hover:underline">Sign in</Link></p>
       </form>
 
       <p className="mt-6 flex items-center justify-center gap-2 text-xs text-[#788b83]"><LockKeyhole className="size-3.5" />Your information is securely encrypted.</p>
