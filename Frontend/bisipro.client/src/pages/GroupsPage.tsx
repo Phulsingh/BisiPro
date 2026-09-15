@@ -38,6 +38,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDebounce } from "@/hooks/useDebouce"
 import { CreateGroupDialog } from "@/components/CerateGroupDialog"
+import {useAuth } from "@/context/authContext"
 
 // Display configurations for BisiTypes matching the BisiPro theme palette
 const bisiTypeConfig: Record<
@@ -75,6 +76,8 @@ const bisiTypeConfig: Record<
 }
 
 const GroupsPage = () => {
+    const { user } = useAuth()
+    const currentRole = user?.role || "User" // Default to "User" if role is undefined
   // Dialog state
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
@@ -235,13 +238,15 @@ const GroupsPage = () => {
             Create and monitor rotating savings groups, monthly auctions, and member allocations.
           </p>
         </div>
-        <Button
-          onClick={() => setCreateDialogOpen(true)}
-          className="cursor-pointer h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-[#056c5c] sm:self-center flex items-center gap-1.5 px-4"
-        >
-          <Plus className="size-4" />
-          <span>New Group</span>
-        </Button>
+        {currentRole === "Admin" && (
+          <Button
+            onClick={() => setCreateDialogOpen(true)}
+            className="cursor-pointer h-10 rounded-xl bg-brand font-semibold text-white shadow-md hover:bg-[#056c5c] sm:self-center flex items-center gap-1.5 px-4"
+          >
+            <Plus className="size-4" />
+            <span>New Group</span>
+          </Button>
+        )}
       </div>
 
       {/* Filter and Search Bar Card */}

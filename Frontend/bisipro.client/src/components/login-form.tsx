@@ -1,4 +1,4 @@
-import { ArrowRight, LockKeyhole } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, LockKeyhole } from "lucide-react"
 import { isAxiosError } from "axios"
 import { type FormEvent, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -15,6 +15,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [errorMessage, setErrorMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const navigate = useNavigate()
   const { signIn } = useAuth()
 
@@ -66,14 +67,19 @@ export function LoginForm({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4">
             <label htmlFor="password" className="text-sm font-semibold text-[#29463f]">Password</label>
-            <Link to="/forgot-password" className="text-sm font-semibold text-[#078a76] underline-offset-4 transition-colors hover:text-[#056c5c] hover:underline">Forgot password?</Link>
+            <Link to="/forgot-password" className="cursor-pointer text-sm font-semibold text-[#078a76] underline-offset-4 transition-colors hover:text-[#056c5c] hover:underline">Forgot password?</Link>
           </div>
-          <Input id="password" name="password" type="password" autoComplete="current-password" required className="h-12 rounded-xl border-[#cedbd3] bg-white px-4 text-[#183630] shadow-[0_1px_2px_rgba(24,54,48,0.04)] focus-visible:border-[#078a76] focus-visible:ring-[#078a76]/20" />
+          <div className="relative">
+            <Input id="password" name="password" type={isPasswordVisible ? "text" : "password"} autoComplete="current-password" required className="h-12 rounded-xl border-[#cedbd3] bg-white px-4 pr-12 text-[#183630] shadow-[0_1px_2px_rgba(24,54,48,0.04)] focus-visible:border-[#078a76] focus-visible:ring-[#078a76]/20" />
+            <button type="button" onClick={() => setIsPasswordVisible((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-12 cursor-pointer items-center justify-center text-[#60736c] hover:text-[#078a76] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#078a76]/20" aria-label={isPasswordVisible ? "Hide password" : "Show password"} aria-pressed={isPasswordVisible}>
+              {isPasswordVisible ? <EyeOff className="size-5" aria-hidden="true" /> : <Eye className="size-5" aria-hidden="true" />}
+            </button>
+          </div>
         </div>
 
         {errorMessage && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>}
 
-        <Button type="submit" disabled={isSubmitting} className="mt-1 h-12 w-full rounded-xl bg-[#078a76] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(7,138,118,0.18)] hover:bg-[#056c5c]">
+        <Button type="submit" disabled={isSubmitting} className="mt-1 h-12 w-full cursor-pointer rounded-xl bg-[#078a76] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(7,138,118,0.18)] hover:bg-[#056c5c] disabled:cursor-not-allowed">
           {isSubmitting ? "Signing in…" : "Sign in to BisiPro"} <ArrowRight className="size-4 transition-transform group-hover/button:translate-x-0.5" />
         </Button>
 
@@ -87,7 +93,7 @@ export function LoginForm({
         onClick={() => {
         window.location.href = "https://localhost:7081/api/auth/google"
         }}
-        variant="outline" type="button" className="h-12 w-full rounded-xl border-[#cedbd3] bg-white text-sm font-semibold text-[#29463f] hover:border-[#b3c3ba] hover:bg-[#f8faf8]">
+        variant="outline" type="button" className="h-12 w-full cursor-pointer rounded-xl border-[#cedbd3] bg-white text-sm font-semibold text-[#29463f] hover:border-[#b3c3ba] hover:bg-[#f8faf8]">
           <svg className="size-[18px]" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#4285F4" d="M21.35 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.24a4.48 4.48 0 0 1-1.94 2.94v2.52h3.15c1.85-1.7 2.9-4.21 2.9-7.29Z" />
             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.23L15.3 17c-.87.58-1.98.92-3.3.92-2.54 0-4.7-1.72-5.47-4.03H3.28v2.6A9.75 9.75 0 0 0 12 21.75Z" />
@@ -97,7 +103,7 @@ export function LoginForm({
           Continue with Google
         </Button>
 
-        <p className="pt-1 text-center text-sm text-[#60736c]">New to BisiPro? <Link to="/register" className="font-bold text-[#078a76] underline-offset-4 hover:underline">Create an account</Link></p>
+        <p className="pt-1 text-center text-sm text-[#60736c]">New to BisiPro? <Link to="/register" className="cursor-pointer font-bold text-[#078a76] underline-offset-4 hover:underline">Create an account</Link></p>
       </form>
 
       <p className="mt-8 flex items-center justify-center gap-2 text-xs text-[#788b83]"><LockKeyhole className="size-3.5" />Your information is securely encrypted.</p>
