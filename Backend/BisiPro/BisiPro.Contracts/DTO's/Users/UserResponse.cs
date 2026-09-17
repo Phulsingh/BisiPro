@@ -1,7 +1,4 @@
 ﻿using BisiPro.Contracts.DTO_s.Groups;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BisiPro.Contracts.DTO_s.Users
 {

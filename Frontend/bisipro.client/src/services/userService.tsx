@@ -2,7 +2,7 @@ import {type GroupDropdownItem} from "./groupService"
 import { apiService, type ApiResponse} from "@/config/apiService"
 
 export type User = {
-    userId: string
+    id: string
     firstName: string
     lastName: string
     email: string
@@ -17,6 +17,11 @@ export type userResponse = ApiResponse<User>
 export const userService = {
     getUserById(userId:string){
         return apiService.get<userResponse>(`User/${userId}`)
+    },
+
+    /** Returns the profile for the authenticated user. */
+    getCurrentUser(){
+        return apiService.get<userResponse>("User/me")
     }
 }
 

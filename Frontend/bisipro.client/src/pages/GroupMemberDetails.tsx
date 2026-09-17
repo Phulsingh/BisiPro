@@ -321,8 +321,8 @@ const GroupMemberDetails = () => {
                 <InfoRow
                   icon={IdCard}
                   label="Member ID"
-                  title={user.userId}
-                  value={user.userId ? user.userId.slice(0, 8) : "-"}
+                  title={user.id}
+                  value={user.id ? user.id.slice(0, 8) : "-"}
                 />
               </div>
 
