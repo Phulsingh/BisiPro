@@ -11,7 +11,7 @@ export type Group = {
   totalMembers: number
   durationInMonths: number
   startDate: string
-  endDate: string
+  endDate: string | null
   collectionDay: number
   auctionDay: number
   lateFee: number
@@ -52,13 +52,19 @@ export type CreateGroupRequest = {
   gracePeriod: number
 }
 
-export type GroupListResponse = PagedResponse<Group>
+export type GroupListResponse = ApiResponse<PagedResponse<Group>>
 export type GroupResponse = ApiResponse<Group>
 export type GroupDropdownResponse = ApiResponse<GroupDropdownItem[]>
 
 export const groupService = {
   getGroups(params: GroupQueryParams = {}) {
     return apiService.get<GroupListResponse>("Group", {
+      params,
+    })
+  },
+
+  getAllGroups(params: GroupQueryParams = {}) {
+    return apiService.get<GroupListResponse>("Group/all", {
       params,
     })
   },

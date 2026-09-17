@@ -16,7 +16,7 @@ namespace BisiPro.Infrastructure.Repositories
         {
             _context = context;
         }
-
+        
         public async Task<bool> ExistsByNameAsync(string GroupName, CancellationToken cancellationToken
             )
         {
@@ -145,6 +145,124 @@ namespace BisiPro.Infrastructure.Repositories
 
         }
 
+       public async Task<PagedResponse<GroupResponse>> GetAllAsync(
+       GroupFilterRequest filter,
+       CancellationToken cancellationToken)
+        {
+            var query = _context.Groups
+                .AsNoTracking();
+
+            // Search by Group Name
+            if (!string.IsNullOrEmpty(filter.Search))
+            {
+                query = query.Where(x =>
+                    x.GroupName.Contains(filter.Search));
+            }
+
+            // Filter by Bisi Type
+            if (filter.BisiType.HasValue)
+            {
+                query = query.Where(x =>
+                    x.BisiType == filter.BisiType);
+            }
+
+            // Filter by Active / Inactive
+            if (filter.IsActive.HasValue)
+            {
+                query = query.Where(x =>
+                    x.IsActive == filter.IsActive.Value);
+            }
+
+            // Filter by Start Date - From
+            if (filter.StartDateFrom.HasValue)
+            {
+                query = query.Where(x =>
+                    x.StartDate >= filter.StartDateFrom.Value);
+            }
+
+            // Filter by Start Date - To
+            if (filter.StartDateTo.HasValue)
+            {
+                query = query.Where(x =>
+                    x.StartDate <= filter.StartDateTo.Value);
+            }
+
+            // Sorting
+            query = filter.SortBy?.ToLower() switch
+            {
+                "groupname" =>
+                    filter.SortOrder?.ToLower() == "desc"
+                        ? query.OrderByDescending(x => x.GroupName)
+                        : query.OrderBy(x => x.GroupName),
+
+                "startdate" =>
+                    filter.SortOrder?.ToLower() == "desc"
+                        ? query.OrderByDescending(x => x.StartDate)
+                        : query.OrderBy(x => x.StartDate),
+
+                "totalmembers" =>
+                    filter.SortOrder?.ToLower() == "desc"
+                        ? query.OrderByDescending(x => x.TotalMembers)
+                        : query.OrderBy(x => x.TotalMembers),
+
+                "createddate" =>
+                    filter.SortOrder?.ToLower() == "desc"
+                        ? query.OrderByDescending(x => x.CreatedAt)
+                        : query.OrderBy(x => x.CreatedAt),
+
+                _ => query.OrderByDescending(x => x.CreatedAt)
+            };
+
+            // Get total count BEFORE pagination
+            var totalCount = await query.CountAsync(
+                cancellationToken);
+
+            // Validate page number
+            var pageNumber = filter.PageNumber < 1
+                ? 1
+                : filter.PageNumber;
+
+            // Validate page size
+            var pageSize = filter.PageSize < 1
+                ? 10
+                : filter.PageSize;
+
+            // Pagination
+            var groups = await query
+             .Skip((pageNumber - 1) * pageSize)
+             .Take(pageSize)
+             .Select(x => new GroupResponse
+              {
+           GroupId = x.Id,
+           GroupName = x.GroupName,
+           Description = x.Description,
+           BisiType = x.BisiType,
+           MonthlyAmount = x.MonthlyAmount,
+           TotalMembers = x.TotalMembers,
+           DurationInMonths = x.DurationInMonths,
+           StartDate = x.StartDate,
+           EndDate = x.EndDate,
+           CollectionDay = x.CollectionDay,
+           AuctionDay = x.AuctionDay,
+           LateFee = x.LateFee,
+           GracePeriod = x.GracePeriod,
+           IsActive = x.IsActive,
+       })
+       .ToListAsync(cancellationToken);
+
+            // Calculate total pages
+            var totalPages = (int)Math.Ceiling(
+                totalCount / (double)pageSize);
+
+            return new PagedResponse<GroupResponse>
+            {
+                Data = groups,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+        }
         public Task UpdateAsync(
            Group group,
            CancellationToken cancellationToken)

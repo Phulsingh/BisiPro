@@ -1,5 +1,4 @@
 import type { AxiosRequestConfig } from "axios"
-
 import { apiClient } from "@/config/axiosConfig"
 
 /** Matches BisiPro.Contracts.Common.ApiResponse<T>. */
@@ -10,14 +9,16 @@ export type ApiResponse<T> = {
   errors: string[]
 }
 
+
 /** Matches BisiPro.Contracts.Common.PagedResponse<T>. */
-export type PagedResponse<T> = ApiResponse<T[]> & {
+export type PagedResponse<T> = {
   pageNumber: number
   pageSize: number
   totalCount: number
   totalPages: number
   hasPrevious: boolean
   hasNext: boolean
+  data: T[]
 }
 
 export const apiService = {

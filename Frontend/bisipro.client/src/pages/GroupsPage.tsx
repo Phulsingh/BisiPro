@@ -103,7 +103,7 @@ const GroupsPage = () => {
     try {
       setLoading(true)
       setError(null)
-      const response = await groupService.getGroups({
+      const response = await groupService.getAllGroups({
         search: debouncedSearch || undefined,
         bisiType,
         isActive,
@@ -114,9 +114,18 @@ const GroupsPage = () => {
       })
 
       if (response && response.isSuccess) {
-        setGroups(response.data || [])
-        setTotalCount(response.totalCount || 0)
-        setTotalPages(response.totalPages || 1)
+        const page = response.data
+
+        // Validate at runtime because API payloads are not guaranteed by TypeScript.
+        if (!page || !Array.isArray(page.data)) {
+          setGroups([])
+          setError("The groups API returned an invalid list response.")
+          return
+        }
+
+        setGroups(page.data)
+        setTotalCount(page.totalCount || 0)
+        setTotalPages(page.totalPages || 1)
       } else {
         setError(response?.error || "Failed to fetch groups data.")
       }
@@ -545,7 +554,9 @@ const GroupsPage = () => {
                         {group.durationInMonths} <span className="text-xs text-[#788b83]">mos</span>
                       </TableCell>
                       <TableCell className="text-[#60736c]">{formatDate(group.startDate)}</TableCell>
-                      <TableCell className="text-[#60736c]">{formatDate(group.endDate)}</TableCell>
+                      <TableCell className="text-[#60736c]">
+                        {group.endDate ? formatDate(group.endDate) : "-"}
+                      </TableCell>
                       <TableCell className="text-center">
                         {group.isActive ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e2f1df] text-[#056c5c] border border-[#c3e4ba]/30">

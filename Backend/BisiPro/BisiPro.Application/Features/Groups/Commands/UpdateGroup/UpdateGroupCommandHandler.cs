@@ -36,8 +36,7 @@ public class GetAllGroupsQueryHandler
             PageNumber = result.PageNumber,
             PageSize = result.PageSize,
             TotalCount = result.TotalCount,
-            TotalPages = result.TotalPages,
-            IsSuccess = true
+            TotalPages = result.TotalPages
         };
     }
 }

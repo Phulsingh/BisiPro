@@ -38,7 +38,6 @@ namespace BisiPro.Application.Features.Groups.Queries
                 PageSize = groups.PageSize,
                 TotalCount = groups.TotalCount,
                 TotalPages = groups.TotalPages,
-                IsSuccess = true
             };
 
         }

@@ -77,6 +77,21 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllGroups(
+        [FromQuery] GroupFilterRequest filter,
+        CancellationToken cancellationToken)
+        {
+            var query = new GetAllGroup(filter);
+
+            var result = await _mediator.Send(
+                query,
+                cancellationToken);
+
+            return Ok(result);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGroup(
             Guid id,

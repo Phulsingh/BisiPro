@@ -1,5 +1,4 @@
-﻿
-using BisiPro.Application.Features.Groups;
+﻿using BisiPro.Application.Features.Groups;
 using BisiPro.Contracts.Common;
 using BisiPro.Contracts.DTO_s.Groups;
 using BisiPro.Domain.Entities;
@@ -24,6 +23,10 @@ namespace BisiPro.Application.Interfaces.Repositories
             Guid agentId,
             GroupFilterRequest filter,
             CancellationToken cancellationToken);
+
+        Task<PagedResponse<GroupResponse>> GetAllAsync(
+        GroupFilterRequest filter,
+        CancellationToken cancellationToken);
 
         Task UpdateAsync(
             Group group,

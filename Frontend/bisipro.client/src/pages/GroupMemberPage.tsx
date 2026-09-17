@@ -75,12 +75,12 @@ const GroupMemberPage = () => {
         pageSize,
       })
 
-      if (response && response.isSuccess) {
+      if (response) {
         setMembers(response.data || [])
         setTotalCount(response.totalCount || 0)
         setTotalPages(response.totalPages || 1)
       } else {
-        setError(response?.error || "Failed to fetch group members data.")
+        setError("Failed to fetch group members data.")
       }
     } catch (err: any) {
       console.error("Error fetching group members:", err)
