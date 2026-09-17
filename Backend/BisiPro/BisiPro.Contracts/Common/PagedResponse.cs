@@ -1,7 +1,6 @@
-﻿
-namespace BisiPro.Contracts.Common
+﻿namespace BisiPro.Contracts.Common
 {
-    public class PagedResponse<T> : ApiResponse<List<T>>
+    public class PagedResponse<T>
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
@@ -9,5 +8,6 @@ namespace BisiPro.Contracts.Common
         public int TotalPages { get; set; }
         public bool HasPrevious => PageNumber > 1;
         public bool HasNext => PageNumber < TotalPages;
+        public List<T> Data { get; set; } = new();
     }
 }

@@ -275,7 +275,7 @@ export const userNavigationGroups: NavigationGroup[] = [
       },
       {
         title: "Explore Groups",
-        href: "/groups/explore",
+        href: "/groups",
         icon: Search,
       },
       {
