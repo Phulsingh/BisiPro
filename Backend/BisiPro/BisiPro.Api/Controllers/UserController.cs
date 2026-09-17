@@ -46,5 +46,39 @@ namespace BisiPro.Api.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyProfile(
+        CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            _logger.LogInformation(
+                "Get current user profile request received for UserId: {UserId}",
+                userId);
+
+            var result = await _mediator.Send(
+                new GetUserByIdQuery(userId),
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }
