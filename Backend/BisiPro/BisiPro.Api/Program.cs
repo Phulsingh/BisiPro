@@ -1,12 +1,11 @@
-﻿using BisiPro.Api.Middlewares;
+﻿using Microsoft.OpenApi;
+using BisiPro.Api.Middlewares;
 using BisiPro.Application.DependencyInjection;
 using BisiPro.Infrastructure.Authentication;
 using BisiPro.Infrastructure.DependencyInjection;
 using BisiPro.Infrastructure.Persistence;
 using BisiPro.Infrastructure.Seeder;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -42,6 +41,24 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
 
 // ============================================================
 // Application Layer
@@ -195,6 +212,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // ------------------------------------------------------------
 // Global Exception Middleware
