@@ -20,6 +20,10 @@ namespace BisiPro.Domain.Entities
         public int GracePeriod { get; set; }
         public bool IsActive { get; set; } = true;
 
+        // Group Assingment to Agents
+        public ICollection<GroupAgent> GroupAgents { get; set; }
+        = new List<GroupAgent>();
+
         // Group Members
         public ICollection<GroupMember> Members { get; set; }
                  = new List<GroupMember>();

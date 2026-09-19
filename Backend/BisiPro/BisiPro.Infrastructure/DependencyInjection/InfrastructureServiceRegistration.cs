@@ -60,6 +60,8 @@ namespace BisiPro.Infrastructure.DependencyInjection
             services.Configure<GeminiOptions>(configuration.GetSection("AI:Gemini"));
             services.AddHttpClient<IAIChatService, GeminiAIChatService>();
 
+            services.AddScoped<IGroupAgentRepository, GroupAgentRepository>();
+
             return services;
         }
     }

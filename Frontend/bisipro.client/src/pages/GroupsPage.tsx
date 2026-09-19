@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import {
   Search,
   RotateCcw,
@@ -77,7 +77,6 @@ const bisiTypeConfig: Record<
 }
 
 const GroupsPage = () => {
-  const navigate = useNavigate()
     const { user } = useAuth()
     const currentRole = user?.role || "User" // Default to "User" if role is undefined
   // Dialog state
@@ -573,15 +572,14 @@ const GroupsPage = () => {
                         )}
                       </TableCell>
                       <TableCell className="text-center">
-                        <Button
-                          onClick={() => navigate(`/groups/${group.groupId}`)}
-                          variant="ghost"
-                          size="icon-sm"
-                          className="cursor-pointer text-[#60736c] hover:text-[#078a76] hover:bg-[#eef5f0] rounded-lg"
+                        <Link
+                          to={`/groups/${encodeURIComponent(group.groupId)}`}
+                          className="inline-flex size-7 items-center justify-center rounded-lg text-[#60736c] transition-colors hover:bg-[#eef5f0] hover:text-[#078a76]"
                           title="View Details"
+                          aria-label={`View details for ${group.groupName}`}
                         >
                           <Eye className="size-4" />
-                        </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   )
@@ -678,15 +676,13 @@ const GroupsPage = () => {
                   <div className="h-px bg-[#d9e2dc]" />
 
                   <div className="flex justify-end gap-2">
-                    <Button
-                      onClick={() => navigate(`/groups/${group.groupId}`)}
-                      variant="outline"
-                      size="sm"
-                      className="border-[#cedbd3] text-[#29463f] hover:bg-[#f5f7f3] rounded-lg w-full flex justify-center items-center gap-1.5"
+                    <Link
+                      to={`/groups/${encodeURIComponent(group.groupId)}`}
+                      className="flex h-7 w-full items-center justify-center gap-1 rounded-lg border border-[#cedbd3] bg-background px-2.5 text-[0.8rem] font-medium text-[#29463f] transition-colors hover:bg-[#f5f7f3]"
                     >
                       <Eye className="size-3.5" />
                       <span>View Details</span>
-                    </Button>
+                    </Link>
                   </div>
                 </div>
               )

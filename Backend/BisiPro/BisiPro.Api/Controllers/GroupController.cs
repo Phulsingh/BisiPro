@@ -1,9 +1,11 @@
 ﻿using BisiPro.Application.Features.Groups;
+using BisiPro.Application.Features.Groups.Commands.AssignGroupAgents;
 using BisiPro.Application.Features.Groups.Commands.CreateGroup;
 using BisiPro.Application.Features.Groups.Commands.DeleteGroup;
 using BisiPro.Application.Features.Groups.Commands.UpdateGroup;
 using BisiPro.Application.Features.Groups.GetGroupDropdown;
 using BisiPro.Application.Features.Groups.Queries;
+using BisiPro.Contracts.DTO_s.GroupAgents;
 using BisiPro.Contracts.DTO_s.Groups;
 //using System.IdentityModel.Tokens.Jwt;
 using MediatR;
@@ -186,5 +188,22 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id:guid}/assign-agents")]
+        public async Task<IActionResult> AssignAgents(
+       Guid id,
+       [FromBody] AssignGroupAgentsRequest request,
+        CancellationToken cancellationToken)
+        {
+            var command = new AssignGroupAgentsCommand(
+                id,
+                request);
+
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
+
+            return Ok(result);
+        }
     }
 }

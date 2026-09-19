@@ -96,7 +96,20 @@ namespace BisiPro.Infrastructure.Repositories
                 TotalPages = totalPages
             };
         }
+        public async Task<List<User>> GetActiveAgentsByIdsAsync(
+        IEnumerable<Guid> agentIds,
+        CancellationToken cancellationToken)
+        {
+            var ids = agentIds.ToList();
 
+            return await _context.Users
+                .Include(x => x.Role)
+                .Where(x =>
+                    ids.Contains(x.Id) &&
+                    x.IsActive &&
+                    x.Role.Name == "Agent")
+                .ToListAsync(cancellationToken);
+        }
         public Task UpdateAsync(User user, CancellationToken cancellationToken)
         {
             _context.Users.Update(user);

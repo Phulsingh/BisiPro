@@ -71,5 +71,6 @@ namespace BisiPro.Infrastructure.Persistence
         public DbSet<ActivityLog> ActivityLogs { get; set; }
         public DbSet<ExternalLogin> ExternalLogins { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<GroupAgent> GroupAgents { get; set; }
     }
 }

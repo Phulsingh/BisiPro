@@ -10,6 +10,10 @@ namespace BisiPro.Application.Interfaces.Repositories
             string email, 
             CancellationToken cancellationToken);
 
+        Task<List<User>> GetActiveAgentsByIdsAsync(
+        IEnumerable<Guid> agentIds,
+        CancellationToken cancellationToken);
+
         Task<User?> AddAsync(
             User user, 
             CancellationToken cancellationToken);
