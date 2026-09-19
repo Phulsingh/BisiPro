@@ -12,6 +12,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AuthCallback = lazy(() => import("./context/AuthCallback"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const GroupsPage = lazy(() => import("./pages/GroupsPage"));
+const GroupDetailsPage = lazy(() => import("./pages/GroupDetailsPage"));
 const GroupMemberPage = lazy(() => import("./pages/GroupMemberPage"));
 const GroupMemberDetails = lazy(() => import("./pages/GroupMemberDetails"));
 
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/groups" element={<GroupsPage />}/>
                 <Route path="/members" element={<GroupMemberPage/>}/>
                 <Route path="/group/members/:userId" element={<GroupMemberDetails />}/>
+                <Route path="/groups/:groupId" element={<GroupDetailsPage />}/>
               </Route>
             </Route>
           </Routes>

@@ -1,21 +1,23 @@
-﻿using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
+﻿using BisiPro.Api.Authentication;
+using BisiPro.Application.Features.Authentications.Commands.ExternalLogin;
 using BisiPro.Application.Features.Authentications.Commands.Login;
-using BisiPro.Api.Authentication;
 using BisiPro.Application.Features.Authentications.Commands.RefreshToken;
-using BisiPro.Application.Features.Authentications.Commands.RevokeRefreshToken;
 using BisiPro.Application.Features.Authentications.Commands.Register;
+using BisiPro.Application.Features.Authentications.Commands.RevokeRefreshToken;
 using BisiPro.Application.Features.Authentications.ForgotPassword;
 using BisiPro.Application.Features.Authentications.ForgotPassword.Commands;
 using BisiPro.Application.Features.Authentications.ResetPassword;
 using BisiPro.Contracts.Authentication;
 using BisiPro.Contracts.Common;
 using BisiPro.Contracts.DTO_s.Groups;
+using BisiPro.Contracts.DTO_s.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;  
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BisiPro.Application.Features.Users.Queries.AgentDropdown;
 
 
 namespace BisiPro.Api.Controllers
@@ -361,6 +363,19 @@ namespace BisiPro.Api.Controllers
                 response.RefreshToken);
 
             response.RefreshToken = string.Empty;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("agents/dropdown")]
+        public async Task<IActionResult> GetAgentsDropdown(
+         [FromQuery] AgentFilterRequest filter,
+        CancellationToken cancellationToken)
+        {
+            var query = new GetAgentsDropdownQuery(filter);
+
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
     }
 }

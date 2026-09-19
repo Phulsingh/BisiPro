@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Search,
   RotateCcw,
@@ -76,6 +77,7 @@ const bisiTypeConfig: Record<
 }
 
 const GroupsPage = () => {
+  const navigate = useNavigate()
     const { user } = useAuth()
     const currentRole = user?.role || "User" // Default to "User" if role is undefined
   // Dialog state
@@ -572,6 +574,7 @@ const GroupsPage = () => {
                       </TableCell>
                       <TableCell className="text-center">
                         <Button
+                          onClick={() => navigate(`/groups/${group.groupId}`)}
                           variant="ghost"
                           size="icon-sm"
                           className="cursor-pointer text-[#60736c] hover:text-[#078a76] hover:bg-[#eef5f0] rounded-lg"
@@ -676,6 +679,7 @@ const GroupsPage = () => {
 
                   <div className="flex justify-end gap-2">
                     <Button
+                      onClick={() => navigate(`/groups/${group.groupId}`)}
                       variant="outline"
                       size="sm"
                       className="border-[#cedbd3] text-[#29463f] hover:bg-[#f5f7f3] rounded-lg w-full flex justify-center items-center gap-1.5"
