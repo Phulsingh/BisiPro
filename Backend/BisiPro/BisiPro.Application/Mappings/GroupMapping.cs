@@ -44,7 +44,6 @@ namespace BisiPro.Application.Mappings
                 AuctionDay = request.AuctionDay,
                 LateFee = request.LateFee,
                 GracePeriod = request.GracePeriod,
-                AgentId = agentId,
                 IsActive = true
             };
         }

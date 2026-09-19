@@ -46,12 +46,12 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
                     "Group not found.");
             }
 
-             //2. Verify Agent owns the Group
-            if (group.AgentId != command.AgentId)
-            {
-                throw new UnauthorizedAccessException(
-                    "You are not authorized to add members to this group.");
-            }
+            // //2. Verify Agent owns the Group
+            //if (group.AgentId != command.AgentId)
+            //{
+            //    throw new UnauthorizedAccessException(
+            //        "You are not authorized to add members to this group.");
+            //}
 
             // 3. Get User
             var user = await _userRepository.GetByIdAsync(

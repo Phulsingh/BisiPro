@@ -1,4 +1,6 @@
 ﻿using BisiPro.Application.Interfaces.Repositories;
+using BisiPro.Contracts.Common;
+using BisiPro.Contracts.DTO_s.Users;
 using BisiPro.Domain.Entities;
 using BisiPro.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,66 @@ namespace BisiPro.Infrastructure.Repositories
                     cancellationToken);
         }
 
+
+        public async Task<PagedResponse<AgentDropdownResponse>>GetAgentsDropdownAsync(
+          AgentFilterRequest filter,
+          CancellationToken cancellationToken)
+        {
+            var query = _context.Users
+                 .AsNoTracking()
+                 .Where(x => x.Role.Name == "Agent" && x.IsActive);
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var search = filter.Search.Trim();
+
+                query = query.Where(x =>
+                    (x.FirstName + " " + x.LastName).Contains(search) ||
+                    x.Email.Contains(search) ||
+                    x.PhoneNumber.Contains(search));
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var data = await query
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(x => new AgentDropdownResponse
+                {
+                    UserId = x.Id,
+                    Name = x.FirstName + " " + x.LastName
+                })
+                .ToListAsync(cancellationToken);
+
+               var totalPages = (int)Math.Ceiling(
+                 totalCount / (double)filter.PageSize);
+
+            return new PagedResponse<AgentDropdownResponse>
+            {
+                Data = data,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+        }
+        public async Task<List<User>> GetActiveAgentsByIdsAsync(
+        IEnumerable<Guid> agentIds,
+        CancellationToken cancellationToken)
+        {
+            var ids = agentIds.ToList();
+
+            return await _context.Users
+                .Include(x => x.Role)
+                .Where(x =>
+                    ids.Contains(x.Id) &&
+                    x.IsActive &&
+                    x.Role.Name == "Agent")
+                .ToListAsync(cancellationToken);
+        }
         public Task UpdateAsync(User user, CancellationToken cancellationToken)
         {
             _context.Users.Update(user);

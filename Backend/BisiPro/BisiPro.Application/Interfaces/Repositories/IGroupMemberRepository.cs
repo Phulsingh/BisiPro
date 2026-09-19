@@ -7,10 +7,10 @@ namespace BisiPro.Application.Interfaces.Repositories
     public interface IGroupMemberRepository
     {
 
-        Task<PagedResponse<GroupMember>> GetByAgentIdAsync(
-        Guid agentId,
-        GroupMemberFilter filter,
-        CancellationToken cancellationToken);
+        //Task<PagedResponse<GroupMember>> GetByAgentIdAsync(
+        //Guid agentId,
+        //GroupMemberFilter filter,
+        //CancellationToken cancellationToken);
 
         Task<GroupMember?> GetByIdAsync(
             Guid id,

@@ -1,4 +1,6 @@
-﻿using BisiPro.Domain.Entities;
+﻿using BisiPro.Contracts.Common;
+using BisiPro.Contracts.DTO_s.Users;
+using BisiPro.Domain.Entities;
 
 namespace BisiPro.Application.Interfaces.Repositories
 {
@@ -7,6 +9,10 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task<bool> ExistsByEmailAsync(
             string email, 
             CancellationToken cancellationToken);
+
+        Task<List<User>> GetActiveAgentsByIdsAsync(
+        IEnumerable<Guid> agentIds,
+        CancellationToken cancellationToken);
 
         Task<User?> AddAsync(
             User user, 
@@ -27,6 +33,10 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task DeleteAsync(
             User user,
             CancellationToken cancellationToken);
+
+        Task<PagedResponse<AgentDropdownResponse>> GetAgentsDropdownAsync(
+          AgentFilterRequest filter,
+          CancellationToken cancellationToken);
 
         Task SaveChangesAsync(
              CancellationToken cancellationToken);

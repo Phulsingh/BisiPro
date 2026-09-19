@@ -23,6 +23,10 @@ namespace BisiPro.Domain.Entities
         // Village
         public string? Village { get; set; }
 
+        //Agents Group Assignment 
+        public ICollection<GroupAgent> AssignedGroups { get; set; }
+        = new List<GroupAgent>();
+
         // Group memberships
         public ICollection<GroupMember> GroupMemberships { get; set; }
             = new List<GroupMember>();

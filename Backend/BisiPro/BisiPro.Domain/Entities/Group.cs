@@ -19,8 +19,10 @@ namespace BisiPro.Domain.Entities
         public decimal LateFee { get; set; }
         public int GracePeriod { get; set; }
         public bool IsActive { get; set; } = true;
-        public Guid AgentId { get; set; }
-        public User Agent { get; set; } = null!;
+
+        // Group Assingment to Agents
+        public ICollection<GroupAgent> GroupAgents { get; set; }
+        = new List<GroupAgent>();
 
         // Group Members
         public ICollection<GroupMember> Members { get; set; }

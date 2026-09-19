@@ -27,7 +27,7 @@ namespace BisiPro.Infrastructure.Repositories
             )
         {
             return await _context.Groups
-                .Where(x => x.AgentId == agentId && x.IsActive)
+                .Where(x => x.IsActive)
                 .Select(x => new GroupDropdownResponse
                 {
                     Id = x.Id,

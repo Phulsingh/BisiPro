@@ -36,15 +36,6 @@ namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
                 };
             }
 
-            // Step 3: Check ownership
-            if (group.AgentId != command.AgentId)
-            {
-                return new ApiResponse<object>
-                {
-                    IsSuccess = false,
-                    Error = "You are not authorized to delete this group."
-                };
-            }
 
             // Step 4: Soft Delete
             group.IsActive = false;
