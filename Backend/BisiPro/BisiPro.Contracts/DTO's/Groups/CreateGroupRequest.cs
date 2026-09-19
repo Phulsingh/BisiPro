@@ -11,6 +11,7 @@ namespace BisiPro.Contracts.DTO_s.Groups
         public int TotalMembers { get; set; }
         public int DurationInMonths { get; set; }
         public DateOnly StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public int CollectionDay { get; set; }
         public int? AuctionDay { get; set; }
         public decimal LateFee { get; set; }

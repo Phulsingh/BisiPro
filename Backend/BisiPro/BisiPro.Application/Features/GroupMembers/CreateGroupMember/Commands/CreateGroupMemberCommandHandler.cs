@@ -36,7 +36,7 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
             CancellationToken cancellationToken)
         {
             // 1. Get Group
-            var group = await _groupRepository.GetByIdAsync(
+            var group = await _groupRepository.GetDetailsByIdAsync(
                 command.GroupId,
                 cancellationToken);
 
@@ -46,7 +46,7 @@ namespace BisiPro.Application.Features.GroupMembers.CreateGroupMember.Commands
                     "Group not found.");
             }
 
-            // 2. Verify Agent owns the Group
+             //2. Verify Agent owns the Group
             if (group.AgentId != command.AgentId)
             {
                 throw new UnauthorizedAccessException(

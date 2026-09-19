@@ -42,110 +42,17 @@ namespace BisiPro.Infrastructure.Repositories
             await _context.Groups.AddAsync(group, cancellationToken);
         }
 
-        public async Task<Group?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Group?> GetDetailsByIdAsync(
+       Guid id,
+       CancellationToken cancellationToken)
         {
             return await _context.Groups
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(
+              x => x.Id == id,
+              cancellationToken);
         }
 
-        public async Task<PagedResponse<Group>> GetByAgentIdAsync(
-            Guid agentId,
-            GroupFilterRequest filter,
-            CancellationToken cancellationToken)
-        {
-            var query = _context.Groups.AsNoTracking()
-                          .Where(x => x.AgentId == agentId);
-            // Search by Group Name
-            if (!string.IsNullOrEmpty(filter.Search))
-            {
-                query = query
-                        .Where(x => x.GroupName
-                        .Contains(filter.Search));
-            }
-
-            // Filter by Bisi Type
-            if (filter.BisiType.HasValue)
-            {
-                query = query
-                       .Where(x => x.BisiType == filter.BisiType);
-            }
-
-            // Filter by Active / Inactive
-            if (filter.IsActive.HasValue)
-            {
-                query = query
-                       .Where(x=> x.IsActive == filter.IsActive.Value);
-            }
-
-
-            // Filter by Start Date - From
-            if (filter.StartDateFrom.HasValue)
-            {
-                query = query.Where(x=> x.StartDate >=
-                            filter.StartDateFrom.Value);
-            }
-
-            // Filter by Start Date - To
-            if (filter.StartDateTo.HasValue)
-            {
-                query = query.Where(x => x.StartDate <=      filter.StartDateTo.Value);
-            }
-
-            // Sorting
-            query = filter.SortBy?.ToLower() switch
-            {
-                "groupname" => filter.SortOrder?.ToLower() == "desc" ?
-                   query.OrderByDescending(x => x.GroupName) :
-                   query.OrderBy(x => x.GroupName),
-
-               "startdate" => filter.SortOrder?.ToLower() == "desc"
-               ? query.OrderByDescending(x => x.StartDate)
-              : query.OrderBy(x => x.StartDate),
-
-                "totalmembers" => filter.SortOrder?.ToLower() == "desc"
-              ? query.OrderByDescending(x => x.TotalMembers)
-              : query.OrderBy(x => x.TotalMembers),
-
-                "createddate" => filter.SortOrder?.ToLower() == "desc"
-             ? query.OrderByDescending(x => x.CreatedAt)
-             : query.OrderBy(x => x.CreatedAt),
-
-                _ => query.OrderByDescending(x => x.CreatedAt)
-            };
-
-
-            // Get total count BEFORE pagination
-            var totalCount = await query.CountAsync(
-                cancellationToken);
-
-            // Validate page size
-            var pageNumber = filter.PageNumber < 1 ? 1 : filter.PageNumber;
-
-            // Validate page size
-            var pazeSize = filter.PageSize < 1 ? 10 : filter.PageSize;
-
-            // Pagination
-            var group = await query
-                     .Skip((pageNumber - 1) * pazeSize)
-                     .Take(pazeSize)
-                     .ToListAsync(cancellationToken);
-
-            // Calculate total pages
-            var totalPages = (int)Math.Ceiling(totalCount / (double)pazeSize);
-
-
-            return new PagedResponse<Group>
-            {
-                 Data = group,
-                 PageNumber = pageNumber,
-                 PageSize = pazeSize,
-                 TotalCount = totalCount,
-                 TotalPages = totalPages
-            };
-
-        }
-
-       public async Task<PagedResponse<GroupResponse>> GetAllAsync(
+        public async Task<PagedResponse<GroupResponse>> GetAllAsync(
        GroupFilterRequest filter,
        CancellationToken cancellationToken)
         {

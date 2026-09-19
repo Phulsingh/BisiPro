@@ -50,29 +50,47 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllGroupAsync(
-            [FromQuery] GroupFilterRequest filter,
-            CancellationToken cancellationToken)
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllGroupAsync(
+        //    [FromQuery] GroupFilterRequest filter,
+        //    CancellationToken cancellationToken)
+        //{
+        //    var agentIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (string.IsNullOrEmpty(agentIdValue))
+        //    {
+        //        return Unauthorized();
+        //    }
+
+        //    var agentId = Guid.Parse(agentIdValue);
+
+        //    // Create Query
+        //    var query = new GetAllGroupsQuery(
+        //        agentId,
+        //        filter);
+
+        //    // Send Query to MediatR
+        //    var result = await _mediator.Send(
+        //        query,
+        //        cancellationToken);
+
+        //    return Ok(result);
+        //}
+
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetGroupById(
+        Guid id,
+        CancellationToken cancellationToken)
         {
-            var agentIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(agentIdValue))
-            {
-                return Unauthorized();
-            }
-
-            var agentId = Guid.Parse(agentIdValue);
-
-            // Create Query
-            var query = new GetAllGroupsQuery(
-                agentId,
-                filter);
-
-            // Send Query to MediatR
             var result = await _mediator.Send(
-                query,
+                new GetGroupByIdQuery(id),
                 cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return NotFound(result);
+            }
 
             return Ok(result);
         }
@@ -83,7 +101,7 @@ namespace BisiPro.Api.Controllers
         [FromQuery] GroupFilterRequest filter,
         CancellationToken cancellationToken)
         {
-            var query = new GetAllGroup(filter);
+            var query = new GetAllGroupsQuery(filter);
 
             var result = await _mediator.Send(
                 query,
@@ -92,28 +110,26 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateGroup(
-            Guid id,
-            [FromBody] CreateGroupRequest request,
-            CancellationToken cancellationToken
-            )
+       Guid id,
+       [FromBody] CreateGroupRequest request,
+       CancellationToken cancellationToken)
         {
-            var agentIdValue = User
-                              .FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(agentIdValue))
-            {
-                return Unauthorized();
-            }
+            var command = new UpdateGroupCommand(
+                id,
+                request);
 
-            var agentId = Guid.Parse(agentIdValue);
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
 
-            var command = new UpdateGroupCommand(id, agentId, request);
-            var result = await _mediator.Send(command, cancellationToken);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
