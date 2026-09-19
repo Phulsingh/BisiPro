@@ -1,7 +1,4 @@
 ﻿using BisiPro.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BisiPro.Contracts.DTO_s.Groups
 {
@@ -34,5 +31,7 @@ namespace BisiPro.Contracts.DTO_s.Groups
         public int GracePeriod { get; set; }
 
         public bool IsActive { get; set; }
+
+        public Guid AgentId { get; set; }
     }
 }

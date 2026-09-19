@@ -1,9 +1,6 @@
 ﻿using BisiPro.Application.Interfaces.Repositories;
 using BisiPro.Contracts.Common;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
 {
@@ -24,8 +21,8 @@ namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
             DeleteGroupCommand command,
             CancellationToken cancellationToken)
         {
-            // Step 1: Find the group
-            var group = await _groupRepository.GetByIdAsync(
+            // Step 1: Find the group ENTITY
+            var group = await _groupRepository.GetDetailsByIdAsync(
                 command.GroupId,
                 cancellationToken);
 
@@ -51,7 +48,6 @@ namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
 
             // Step 4: Soft Delete
             group.IsActive = false;
-            group.UpdatedAt = DateTime.UtcNow;
 
             // Step 5: Update
             await _groupRepository.UpdateAsync(
@@ -70,4 +66,4 @@ namespace BisiPro.Application.Features.Groups.Commands.DeleteGroup
             };
         }
     }
-    }
+}

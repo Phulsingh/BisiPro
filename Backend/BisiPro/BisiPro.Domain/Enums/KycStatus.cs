@@ -6,8 +6,9 @@ namespace BisiPro.Domain.Enums
 {
     public enum KycStatus
     {
-        Pending = 0,
-        Completed = 1,
-        Rejected = 2
+        NotStarted = 1,
+        Pending = 2,
+        Completed = 3,
+        Rejected = 4
     }
 }
