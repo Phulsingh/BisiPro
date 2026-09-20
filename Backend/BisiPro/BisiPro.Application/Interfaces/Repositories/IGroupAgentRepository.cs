@@ -10,6 +10,10 @@ namespace BisiPro.Application.Interfaces.Repositories
         Task<List<GroupAgent>> GetByGroupIdAsync(
             Guid groupId,
             CancellationToken cancellationToken);
+
+         Task<List<Guid>> GetAgentIdsByGroupIdAsync(
+         Guid groupId,
+         CancellationToken cancellationToken);
         Task AddRangeAsync(
             IEnumerable<GroupAgent> groupAgents,
             CancellationToken cancellationToken);

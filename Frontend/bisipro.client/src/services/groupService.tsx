@@ -17,6 +17,10 @@ export type Group = {
   lateFee: number
   gracePeriod: number
   isActive: boolean
+  /** Present for groups that have an existing single-agent assignment. */
+  agentId?: string | null
+  /** Supported when the group details API returns all assigned agents. */
+  agentIds?: string[]
 }
 
 /** Lightweight group option returned by GET /api/Group/dropdown */
@@ -52,6 +56,10 @@ export type CreateGroupRequest = {
   gracePeriod: number
 }
 
+export type AssignGroupAgentsRequest = {
+  agentIds: string[]
+}
+
 export type GroupListResponse = ApiResponse<PagedResponse<Group>>
 export type GroupResponse = ApiResponse<Group>
 export type GroupDropdownResponse = ApiResponse<GroupDropdownItem[]>
@@ -79,5 +87,12 @@ export const groupService = {
 
   createGroup(body: CreateGroupRequest) {
     return apiService.post<GroupResponse, CreateGroupRequest>("Group", body)
+  },
+
+  assignAgents(groupId: string, body: AssignGroupAgentsRequest) {
+    return apiService.put<ApiResponse<boolean>, AssignGroupAgentsRequest>(
+      `Group/${groupId}/assign-agents`,
+      body,
+    )
   },
 }

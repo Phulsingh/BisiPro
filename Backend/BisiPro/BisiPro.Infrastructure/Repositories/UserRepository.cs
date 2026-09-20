@@ -4,9 +4,7 @@ using BisiPro.Contracts.DTO_s.Users;
 using BisiPro.Domain.Entities;
 using BisiPro.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace BisiPro.Infrastructure.Repositories
 {

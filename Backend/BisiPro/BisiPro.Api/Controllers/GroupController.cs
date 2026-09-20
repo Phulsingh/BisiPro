@@ -5,6 +5,7 @@ using BisiPro.Application.Features.Groups.Commands.DeleteGroup;
 using BisiPro.Application.Features.Groups.Commands.UpdateGroup;
 using BisiPro.Application.Features.Groups.GetGroupDropdown;
 using BisiPro.Application.Features.Groups.Queries;
+using BisiPro.Application.Features.Groups.Queries.GetAssignedAgentIds;
 using BisiPro.Contracts.DTO_s.GroupAgents;
 using BisiPro.Contracts.DTO_s.Groups;
 //using System.IdentityModel.Tokens.Jwt;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace BisiPro.Api.Controllers
+namespace BisiPro.Api.Controllers 
 {
     [Authorize]
     [ApiController]
@@ -203,6 +204,15 @@ namespace BisiPro.Api.Controllers
                 command,
                 cancellationToken);
 
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id:guid}/assigned-agent-ids")]
+        public async Task<IActionResult> GetAssignedAgentIds(Guid id, CancellationToken cancellationToken)
+        {
+            var query = new GetAssignedAgentIdsQuery(id);
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
     }

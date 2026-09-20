@@ -24,6 +24,17 @@ namespace BisiPro.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<Guid>> GetAgentIdsByGroupIdAsync(
+        Guid groupId,
+        CancellationToken cancellationToken)
+        {
+            return await _context.GroupAgents
+                .AsNoTracking()
+                .Where(x => x.GroupId == groupId)
+                .Select(x => x.AgentId)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task AddRangeAsync(
             IEnumerable<GroupAgent> groupAgents,
             CancellationToken cancellationToken)

@@ -18,14 +18,16 @@ export type userResponse = ApiResponse<User>
 export type AgentDropdownItem = {
     userId: string
     name: string
-}
+} 
 
 export type AgentDropdownParams = {
     pageNumber?: number
     pageSize?: number
+    search?: string
 }
 
 export type AgentDropdownResponse = ApiResponse<PagedResponse<AgentDropdownItem>>
+export type AssignedAgentIdsResponse = ApiResponse<string[]>
 
 export const userService = {
     getUserById(userId:string){
@@ -37,13 +39,21 @@ export const userService = {
         return apiService.get<userResponse>("User/me")
     },
 
-    getAgentsDropdown({ pageNumber = 1, pageSize = 10 }: AgentDropdownParams = {}) {
+    getAgentsDropdown({ pageNumber = 1, pageSize = 10, search }: AgentDropdownParams = {}) {
         return apiService.get<AgentDropdownResponse>("Auth/agents/dropdown", {
             params: {
                 PageNumber: pageNumber,
                 PageSize: pageSize,
+                Search: search || undefined,
             },
         })
+    },
+
+    /** Returns the agent user IDs currently assigned to a group. */
+    getAssignedAgentIds(groupId: string) {
+        return apiService.get<AssignedAgentIdsResponse>(
+            `Group/${groupId}/assigned-agent-ids`
+        )
     }
 }
 
