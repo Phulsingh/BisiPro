@@ -15,6 +15,7 @@ const GroupsPage = lazy(() => import("./pages/GroupsPage"));
 const GroupDetailsPage = lazy(() => import("./pages/GroupDetailsPage"));
 const GroupMemberPage = lazy(() => import("./pages/GroupMemberPage"));
 const GroupMemberDetails = lazy(() => import("./pages/GroupMemberDetails"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/members" element={<GroupMemberPage/>}/>
                 <Route path="/group/members/:userId" element={<GroupMemberDetails />}/>
                 <Route path="/groups/:groupId" element={<GroupDetailsPage />}/>
+                <Route path="/profile" element={<ProfilePage />}/>
               </Route>
             </Route>
           </Routes>
