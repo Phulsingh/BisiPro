@@ -35,7 +35,7 @@ export const userService = {
     },
 
     /** Returns the profile for the authenticated user. */
-    getCurrentUser(){
+    getProfileUser(){
         return apiService.get<userResponse>("User/me")
     },
 

@@ -1,5 +1,5 @@
 import { Bell, ChevronRight, LogOut, Moon, Search } from "lucide-react"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -29,9 +29,16 @@ export function Topbar() {
       <div className="ml-auto flex items-center gap-1 md:ml-2">
         <Button variant="ghost" size="icon" className="text-[#38584f] hover:bg-[#eef5f0]" aria-label="Switch colour mode"><Moon /></Button>
         <Button variant="ghost" size="icon" className="relative text-[#38584f] hover:bg-[#eef5f0]" aria-label="Notifications"><Bell /><span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#d8534f] ring-2 ring-white" /></Button>
-        <div className="ml-1 hidden items-center gap-2 border-l border-[#e2ebe6] pl-3 sm:flex">
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#183f37] text-xs font-bold text-[#d9f0c9]">{initials}</span>
-          <span className="hidden pr-1 lg:block"><span className="block text-sm font-bold leading-4 text-[#183630]">{user?.fullName || "BisiPro user"}</span><span className="block text-xs text-[#789088] capitalize">{normaliseRole(user?.role)}</span></span>
+        <div className="ml-1 flex items-center gap-1 border-l border-[#e2ebe6] pl-2 sm:gap-2 sm:pl-3">
+          <Link
+            to="/profile"
+            aria-label="View your profile"
+            title="View your profile"
+            className="flex items-center gap-2 rounded-full p-0.5 pr-1 transition-colors hover:bg-[#eef5f0] focus-visible:ring-2 focus-visible:ring-[#078a76]/40 focus-visible:outline-none lg:rounded-xl lg:pr-2"
+          >
+            <span className="flex size-9 items-center justify-center rounded-full bg-[#183f37] text-xs font-bold text-[#d9f0c9]">{initials}</span>
+            <span className="hidden text-left lg:block"><span className="block text-sm font-bold leading-4 text-[#183630]">{user?.fullName || "BisiPro user"}</span><span className="block text-xs text-[#789088] capitalize">{normaliseRole(user?.role)}</span></span>
+          </Link>
           <Button variant="ghost" size="icon-sm" onClick={logout} className="text-[#789088] hover:bg-[#fdf0ef] hover:text-[#bf403d]" aria-label="Sign out"><LogOut /></Button>
         </div>
       </div>
