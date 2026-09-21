@@ -5,6 +5,7 @@ using BisiPro.Application.Features.Groups.Commands.DeleteGroup;
 using BisiPro.Application.Features.Groups.Commands.UpdateGroup;
 using BisiPro.Application.Features.Groups.GetGroupDropdown;
 using BisiPro.Application.Features.Groups.Queries;
+using BisiPro.Application.Features.Groups.Queries.GetAgentGroups;
 using BisiPro.Application.Features.Groups.Queries.GetAssignedAgentIds;
 using BisiPro.Contracts.DTO_s.GroupAgents;
 using BisiPro.Contracts.DTO_s.Groups;
@@ -104,13 +105,36 @@ namespace BisiPro.Api.Controllers
         [FromQuery] GroupFilterRequest filter,
         CancellationToken cancellationToken)
         {
-            var query = new GetAllGroupsQuery(filter);
+            // Get current logged-in user's ID from JWT
+            var userIdClaim = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
-            var result = await _mediator.Send(
-                query,
-                cancellationToken);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+            // Agent
+            if (User.IsInRole("Agent"))
+            {
+                var agentQuery = new GetAgentGroupsQuery(
+                    userId,
+                    filter);
 
-            return Ok(result);
+                var agentResult = await _mediator.Send(
+                    agentQuery,
+                    cancellationToken);
+
+                return Ok(agentResult);
+            }
+
+                var adminQuery = new GetAllGroupsQuery(filter);
+
+                var adminResult = await _mediator.Send(
+                    adminQuery,
+                    cancellationToken);
+
+                return Ok(adminResult);
+
         }
 
         [Authorize(Roles = "Admin")]
