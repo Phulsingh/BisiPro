@@ -72,5 +72,6 @@ namespace BisiPro.Infrastructure.Persistence
         public DbSet<ExternalLogin> ExternalLogins { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<GroupAgent> GroupAgents { get; set; }
+        public DbSet<GroupJoinRequest> GroupJoinRequests { get; set; }
     }
 }

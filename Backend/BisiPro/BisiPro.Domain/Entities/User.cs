@@ -31,6 +31,9 @@ namespace BisiPro.Domain.Entities
         public ICollection<GroupMember> GroupMemberships { get; set; }
             = new List<GroupMember>();
 
+        public ICollection<GroupJoinRequest> GroupJoinRequests { get; set; }
+         = new List<GroupJoinRequest>();
+
         public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
            = new List<PasswordResetToken>();
     }

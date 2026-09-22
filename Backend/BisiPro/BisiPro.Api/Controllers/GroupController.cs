@@ -2,6 +2,7 @@
 using BisiPro.Application.Features.Groups.Commands.AssignGroupAgents;
 using BisiPro.Application.Features.Groups.Commands.CreateGroup;
 using BisiPro.Application.Features.Groups.Commands.DeleteGroup;
+using BisiPro.Application.Features.Groups.Commands.RequestToJoinGroup;
 using BisiPro.Application.Features.Groups.Commands.UpdateGroup;
 using BisiPro.Application.Features.Groups.GetGroupDropdown;
 using BisiPro.Application.Features.Groups.Queries;
@@ -237,6 +238,33 @@ namespace BisiPro.Api.Controllers
         {
             var query = new GetAssignedAgentIdsQuery(id);
             var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+
+        [Authorize(Roles = "Users")]
+        [HttpPost("{id:guid}/join")]
+        public async Task<IActionResult> RequestToJoinGroup(
+        Guid id,
+        CancellationToken cancellationToken)
+        {
+            // Get logged-in User ID from JWT
+            var userIdClaim = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var command = new RequestToJoinGroupCommand(
+                id,
+                userId);
+
+            var result = await _mediator.Send(
+                command,
+                cancellationToken);
+
             return Ok(result);
         }
     }
