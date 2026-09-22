@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace BisiPro.Domain.Enums
 {
     public enum ActivityType

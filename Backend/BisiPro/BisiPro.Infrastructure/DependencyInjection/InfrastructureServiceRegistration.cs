@@ -62,6 +62,9 @@ namespace BisiPro.Infrastructure.DependencyInjection
 
             services.AddScoped<IGroupAgentRepository, GroupAgentRepository>();
 
+            services.AddScoped<IGroupJoinRequestRepository ,GroupJoinRequestRepository>();
+
+
             return services;
         }
     }

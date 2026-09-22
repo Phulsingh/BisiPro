@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BisiPro.Domain.Enums
+﻿namespace BisiPro.Domain.Enums
 {
     public enum KycStatus
     {

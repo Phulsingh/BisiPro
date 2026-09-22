@@ -27,5 +27,8 @@ namespace BisiPro.Domain.Entities
         // Group Members
         public ICollection<GroupMember> Members { get; set; }
                  = new List<GroupMember>();
+        public ICollection<GroupJoinRequest> JoinRequests { get; set; }
+                 = new List<GroupJoinRequest>();
     }
+
 }
