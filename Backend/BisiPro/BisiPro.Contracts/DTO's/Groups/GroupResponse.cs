@@ -31,5 +31,7 @@ namespace BisiPro.Contracts.DTO_s.Groups
         public int GracePeriod { get; set; }
 
         public bool IsActive { get; set; }
+        public bool IsMember { get; set; }
+        public bool IsRequested { get; set; }
     }
 }

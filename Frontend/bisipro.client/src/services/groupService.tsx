@@ -20,7 +20,9 @@ export type Group = {
   /** Present for groups that have an existing single-agent assignment. */
   agentId?: string | null
   /** Supported when the group details API returns all assigned agents. */
-  agentIds?: string[]
+  agentIds?: string[],
+  isMember?: boolean
+  isRequested?: boolean
 }
 
 /** Lightweight group option returned by GET /api/Group/dropdown */
@@ -63,6 +65,7 @@ export type AssignGroupAgentsRequest = {
 export type GroupListResponse = ApiResponse<PagedResponse<Group>>
 export type GroupResponse = ApiResponse<Group>
 export type GroupDropdownResponse = ApiResponse<GroupDropdownItem[]>
+export type JoinGroupResponse = ApiResponse<boolean>
 
 export const groupService = {
   getGroups(params: GroupQueryParams = {}) {
@@ -94,5 +97,10 @@ export const groupService = {
       `Group/${groupId}/assign-agents`,
       body,
     )
+  },
+
+  /** Sends a join request for the authenticated user. */
+  requestToJoinGroup(groupId: string) {
+    return apiService.post<JoinGroupResponse, null>(`Group/${groupId}/join`, null)
   },
 }

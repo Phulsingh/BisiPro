@@ -88,8 +88,16 @@ namespace BisiPro.Api.Controllers
         Guid id,
         CancellationToken cancellationToken)
         {
+            var userIdClaim = User.FindFirstValue(
+                              ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
             var result = await _mediator.Send(
-                new GetGroupByIdQuery(id),
+                new GetGroupByIdQuery(id, userId),
                 cancellationToken);
 
             if (!result.IsSuccess)
@@ -100,7 +108,7 @@ namespace BisiPro.Api.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+   
         [HttpGet("all")]
         public async Task<IActionResult> GetAllGroups(
         [FromQuery] GroupFilterRequest filter,
