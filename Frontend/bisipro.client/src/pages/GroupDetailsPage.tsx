@@ -40,6 +40,10 @@ const GroupDetailsPage = () => {
   const [loadingAssignedAgents, setLoadingAssignedAgents] = useState(false)
   const [assignmentError, setAssignmentError] = useState<string | null>(null)
   const [assignmentNotice, setAssignmentNotice] = useState<string | null>(null)
+  const [joiningGroup, setJoiningGroup] = useState(false)
+  const [joinRequestSubmitted, setJoinRequestSubmitted] = useState(false)
+  const [joinError, setJoinError] = useState<string | null>(null)
+  const [joinNotice, setJoinNotice] = useState<string | null>(null)
 
   const existingAgentIds = useMemo(() => {
     if (!group) return []
@@ -49,6 +53,7 @@ const GroupDetailsPage = () => {
   }, [group])
 
   const isAdmin = normaliseRole(user?.role) === "admin"
+  const isUser = normaliseRole(user?.role) === "user"
 
   const fetchGroup = useCallback(async () => {
     if (!groupId) { setError("No group was selected."); setLoading(false); return }
@@ -122,6 +127,30 @@ const GroupDetailsPage = () => {
     }
   }
 
+  const requestToJoinGroup = async () => {
+    if (!group || joiningGroup || joinRequestSubmitted) return
+
+    try {
+      setJoiningGroup(true)
+      setJoinError(null)
+      setJoinNotice(null)
+
+      const response = await groupService.requestToJoinGroup(group.groupId)
+      if (!response?.isSuccess) {
+        setJoinError(response?.error || "Unable to send your request to join this group.")
+        return
+      }
+
+      setJoinRequestSubmitted(true)
+      setJoinNotice("Your request to join this group has been sent.")
+    } catch (err: any) {
+      console.error("Error requesting to join group:", err)
+      setJoinError(err?.message || "Unable to send your request to join this group.")
+    } finally {
+      setJoiningGroup(false)
+    }
+  }
+
   if (error) return <div className="space-y-6"><BackButton onClick={backToGroups} /><div className="flex flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50/50 p-8 text-center text-red-800"><AlertTriangle className="mb-3 size-10 text-red-600" /><h1 className="text-lg font-bold">Failed to Load Group Details</h1><p className="mt-1 max-w-md text-sm text-red-700/80">{error}</p><Button onClick={fetchGroup} variant="outline" className="mt-4 rounded-xl border-red-200 bg-white text-red-800 hover:bg-red-50"><RefreshCw className="mr-2 size-4" />Try Again</Button></div></div>
   if (loading) return <div className="space-y-6"><BackButton onClick={backToGroups} /><div className="rounded-xl border border-brand bg-white p-6 shadow-sm"><div className="flex items-center gap-4"><Skeleton className="size-16 rounded-2xl" /><div className="space-y-2"><Skeleton className="h-7 w-52" /><Skeleton className="h-4 w-72" /></div></div></div><div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((item) => <div key={item} className="rounded-xl border border-brand bg-white p-4 shadow-sm"><Skeleton className="h-3 w-24" /><Skeleton className="mt-3 h-6 w-32" /></div>)}</div><div className="grid grid-cols-1 gap-6 lg:grid-cols-3"><div className="space-y-5 rounded-xl border border-brand bg-white p-6 shadow-sm lg:col-span-2"><Skeleton className="h-5 w-40" /><div className="grid grid-cols-1 gap-5 sm:grid-cols-2">{[0, 1, 2, 3, 4, 5].map((item) => <Skeleton key={item} className="h-10 w-full" />)}</div></div><Skeleton className="h-64 rounded-xl" /></div></div>
   if (!group) return <div className="space-y-6"><BackButton onClick={backToGroups} /><div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#cedbd3] bg-white p-12 text-center shadow-sm"><Users className="mb-4 size-9 text-[#078a76]" /><h1 className="text-lg font-bold text-brand-ink">Group not found</h1><p className="mt-1 text-sm text-[#60736c]">This group may have been removed from the workspace.</p><Button onClick={backToGroups} variant="outline" className="mt-6 rounded-xl border-[#cedbd3] text-[#078a76]">Back to Groups</Button></div></div>
@@ -129,8 +158,10 @@ const GroupDetailsPage = () => {
   const type = bisiTypeDetails[group.bisiType] || bisiTypeDetails[BisiType.FixedRotation]
   const TypeIcon = type.icon
   return <div className="space-y-6"><BackButton onClick={backToGroups} />
-    <section className="relative overflow-hidden rounded-xl border border-brand bg-white p-6 shadow-sm"><div className="absolute inset-y-0 left-0 w-1.5 bg-[#078a76]" /><div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"><div className="flex min-w-0 items-start gap-4"><span className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-[#c3e4ba]/60 bg-[#e2f1df]/70 text-lg font-bold text-[#056c5c]">{getInitials(group.groupName)}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h1 className="truncate text-page-title font-bold tracking-tight text-brand-ink">{group.groupName}</h1><span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold", group.isActive ? "border-[#c3e4ba] bg-[#e2f1df] text-[#056c5c]" : "border-gray-200 bg-gray-100 text-gray-500")}><span className={cn("size-1.5 rounded-full", group.isActive ? "bg-[#078a76]" : "bg-gray-400")} />{group.isActive ? "Active" : "Inactive"}</span></div><p className="mt-2 max-w-2xl text-sm leading-6 text-[#60736c]">{group.description || "No description has been added for this savings group."}</p></div></div><div className="flex flex-wrap items-center gap-2"><span className={cn("inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold", type.className)}><TypeIcon className="size-4" />{type.label}</span>{isAdmin && <Button onClick={() => { setAssignmentNotice(null); setAssignmentDialogOpen(true) }} className="h-9 cursor-pointer gap-2 rounded-xl bg-[#078a76] px-3 font-semibold text-white hover:bg-[#056c5c]"><UserRoundPlus className="size-4" />Assign Group</Button>}</div></div></section>
+    <section className="relative overflow-hidden rounded-xl border border-brand bg-white p-6 shadow-sm"><div className="absolute inset-y-0 left-0 w-1.5 bg-[#078a76]" /><div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"><div className="flex min-w-0 items-start gap-4"><span className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-[#c3e4ba]/60 bg-[#e2f1df]/70 text-lg font-bold text-[#056c5c]">{getInitials(group.groupName)}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h1 className="truncate text-page-title font-bold tracking-tight text-brand-ink">{group.groupName}</h1><span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold", group.isActive ? "border-[#c3e4ba] bg-[#e2f1df] text-[#056c5c]" : "border-gray-200 bg-gray-100 text-gray-500")}><span className={cn("size-1.5 rounded-full", group.isActive ? "bg-[#078a76]" : "bg-gray-400")} />{group.isActive ? "Active" : "Inactive"}</span></div><p className="mt-2 max-w-2xl text-sm leading-6 text-[#60736c]">{group.description || "No description has been added for this savings group."}</p></div></div><div className="flex flex-wrap items-center gap-2"><span className={cn("inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold", type.className)}><TypeIcon className="size-4" />{type.label}</span>{isUser && <Button onClick={requestToJoinGroup} disabled={joiningGroup || joinRequestSubmitted} className="h-9 cursor-pointer gap-2 rounded-xl bg-[#078a76] px-3 font-semibold text-white hover:bg-[#056c5c] disabled:cursor-not-allowed">{joiningGroup ? <RefreshCw className="size-4 animate-spin" /> : <UserRoundPlus className="size-4" />}{joiningGroup ? "Sending..." : joinRequestSubmitted ? "Request sent" : "Join Group"}</Button>}{isAdmin && <Button onClick={() => { setAssignmentNotice(null); setAssignmentDialogOpen(true) }} className="h-9 cursor-pointer gap-2 rounded-xl bg-[#078a76] px-3 font-semibold text-white hover:bg-[#056c5c]"><UserRoundPlus className="size-4" />Assign Group</Button>}</div></div></section>
     {assignmentNotice && <div className="flex items-center gap-2 rounded-xl border border-[#c3e4ba] bg-[#e2f1df]/70 px-4 py-3 text-sm font-medium text-[#056c5c]" role="status"><CheckCircle2 className="size-4" />{assignmentNotice}</div>}
+    {joinNotice && <div className="flex items-center gap-2 rounded-xl border border-[#c3e4ba] bg-[#e2f1df]/70 px-4 py-3 text-sm font-medium text-[#056c5c]" role="status"><CheckCircle2 className="size-4" />{joinNotice}</div>}
+    {joinError && <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50/50 px-4 py-3 text-sm font-medium text-red-800" role="alert"><AlertTriangle className="size-4 text-red-600" />{joinError}</div>}
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"><StatCard icon={Wallet} label="Monthly contribution" value={formatCurrency(group.monthlyAmount)} accent /><StatCard icon={Users} label="Member capacity" value={`${group.totalMembers} members`} /><StatCard icon={CalendarRange} label="Duration" value={`${group.durationInMonths} months`} /><StatCard icon={CircleDollarSign} label="Estimated pool" value={formatCurrency(group.monthlyAmount * group.totalMembers)} /></div>
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3"><section className="rounded-xl border border-brand bg-white p-6 shadow-sm lg:col-span-2"><div className="flex items-center justify-between"><h2 className="text-base font-bold text-brand-ink">Group schedule</h2><span className="text-xs text-[#788b83]">Key dates and collection settings</span></div><div className="mt-4 h-px bg-[#d9e2dc]" /><div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2"><InfoRow icon={CalendarDays} label="Start date" value={formatDate(group.startDate)} /><InfoRow icon={CalendarRange} label="End date" value={group.endDate ? formatDate(group.endDate) : "Not set"} /><InfoRow icon={Clock3} label="Collection day" value={`Day ${group.collectionDay} of each month`} />{group.bisiType === BisiType.Auction && <InfoRow icon={Gavel} label="Auction day" value={group.auctionDay ? `Day ${group.auctionDay} of each month` : "Not set"} />}</div></section><section className="rounded-xl border border-brand bg-white p-6 shadow-sm"><div className="flex items-center gap-3"><span className={cn("flex size-10 items-center justify-center rounded-xl border", type.className)}><TypeIcon className="size-5" /></span><div><h2 className="text-base font-bold text-brand-ink">{type.label}</h2><p className="text-xs text-[#788b83]">Payout method</p></div></div><p className="mt-5 text-sm leading-6 text-[#60736c]">{type.description}</p><div className="mt-5 rounded-xl border border-[#cedbd3] bg-[#f5f7f3]/60 p-4"><span className="block text-xs font-medium text-[#788b83]">Group status</span><span className="mt-1 block text-sm font-bold text-[#183630]">{group.isActive ? "Currently accepting activity" : "Currently inactive"}</span></div></section></div>
     <section className="rounded-xl border border-brand bg-white p-6 shadow-sm"><div className="flex items-center justify-between"><h2 className="text-base font-bold text-brand-ink">Payment terms</h2><span className="text-xs text-[#788b83]">Applied to overdue collections</span></div><div className="mt-4 h-px bg-[#d9e2dc]" /><div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3"><InfoRow icon={Wallet} label="Monthly contribution" value={formatCurrency(group.monthlyAmount)} /><InfoRow icon={CircleDollarSign} label="Late fee" value={formatCurrency(group.lateFee)} /><InfoRow icon={Clock3} label="Grace period" value={`${group.gracePeriod} day${group.gracePeriod === 1 ? "" : "s"}`} /></div></section>
